@@ -4,6 +4,8 @@ import { HOLO_PRESETS, DEFAULT_SHINE, holoProps } from '../shine.js';
 import { cardImg } from '../decks.js';
 import { useDeck } from '../decks.js';
 import HoloCard from '../reactbits/HoloCard.jsx';
+import { BALL_PRESETS } from '../reactbits/CrystalizedBall.jsx';
+import { BALL_PRESET_NAMES } from '../shine.js';
 
 // Controls styled after the React Bits "Customize" panels: a filled bar behind each slider row.
 function Slider({ label, value, min, max, step, onChange, fmt = v => v }) {
@@ -67,7 +69,7 @@ export default function ThemePicker({ theme, onChange, shine, onShine, onClose }
         <button className="close small-close" onClick={onClose} aria-label="Close">✕</button>
       </div>
       <div className="theme-tabs" role="tablist">
-        {[['table', 'Table'], ['shine', 'Card Shine'], ['zoom', 'Zoomed Card']].map(([k, t]) => (
+        {[['table', 'Table'], ['shine', 'Card Shine'], ['ball', 'Crystal Ball'], ['zoom', 'Zoomed Card']].map(([k, t]) => (
           <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{t}</button>
         ))}
       </div>
@@ -115,8 +117,8 @@ export default function ThemePicker({ theme, onChange, shine, onShine, onClose }
                 <Color label="Tint" value={theme.patternColor || theme.accent} onChange={v => setPat({ patternColor: v })} />
               )}
               <Slider label="Strength" value={theme.patternOpacity ?? 0.9} min={0.1} max={1} step={0.05} onChange={v => setPat({ patternOpacity: v })} fmt={v => v.toFixed(2)} />
-              <Select label="Size" value={theme.patternFit || 'contain'} onChange={v => setPat({ patternFit: v })}
-                options={[['contain', 'Fit'], ['cover', 'Fill']]} />
+              <Select label="Size" value={theme.patternFit || 'cover'} onChange={v => setPat({ patternFit: v })}
+                options={[['cover', 'Edge to edge'], ['contain', 'Fit whole design']]} />
             </div>
           )}
         </>
@@ -148,6 +150,44 @@ export default function ThemePicker({ theme, onChange, shine, onShine, onClose }
           <button className="ghost small reset" onClick={() => onShine({ ...shine, ...pick(DEFAULT_SHINE, SHINE_KEYS) })}>↺ Reset</button>
         </>
       )}
+
+      {tab === 'ball' && (() => {
+        const b = shine.ball;
+        const base = BALL_PRESETS[b.preset] || BALL_PRESETS.plasma;
+        const v = k => (b.overrides[k] ?? base[k]);
+        const ov = (k, val) => onShine({ ...shine, ball: { ...b, overrides: { ...b.overrides, [k]: val } } });
+        const sb = patch => onShine({ ...shine, ball: { ...b, ...patch } });
+        const num = (k, label, min, max, step, fmt) => <Slider key={k} label={label} value={v(k)} min={min} max={max} step={step} onChange={x => ov(k, x)} fmt={fmt || (x => x)} />;
+        return (
+          <>
+            <p className="ctl-note">The glowing ball on the table. It stirs when you move near it and surges while you shuffle and draw.</p>
+            <div className="ctl-grid">
+              <Select label="Preset" value={b.preset} onChange={x => sb({ preset: x, overrides: {} })} options={BALL_PRESET_NAMES.map(n => [n, cap(n)])} />
+              <Select label="Motion" value={v('motion')} onChange={x => ov('motion', x)} options={['rise', 'fall', 'drift', 'orbit'].map(n => [n, cap(n)])} />
+              <Select label="Particle Shape" value={v('particleShape')} onChange={x => ov('particleShape', x)} options={[['square', 'Square'], ['round', 'Round']]} />
+              <Color label="Color" value={v('color').toLowerCase()} onChange={x => ov('color', x)} />
+              {num('glow', 'Glow', 0, 2, 0.05)}
+              {num('haze', 'Haze', 0, 2, 0.05)}
+              {num('strands', 'Strands', 0, 10, 1)}
+              {num('crackle', 'Crackle', 0, 1, 0.05)}
+              {num('flares', 'Flares', 0, 1, 0.05)}
+              {num('sparks', 'Sparks', 0, 1, 0.05)}
+              {num('particleCount', 'Particles', 0, 40000, 1000)}
+              {num('fill', 'Fill', 0, 1, 0.05)}
+              {num('depth', 'Depth', 0, 1, 0.05)}
+              {num('twinkle', 'Twinkle', 0, 1, 0.05)}
+              {num('dustSpeed', 'Dust Speed', 0, 3, 0.1)}
+              {num('sway', 'Sway', 0, 1, 0.05)}
+              <Slider label="Speed" value={b.speed} min={0} max={3} step={0.1} onChange={x => sb({ speed: x })} />
+              <Slider label="Hover Strength" value={b.hoverStrength} min={0} max={1} step={0.05} onChange={x => sb({ hoverStrength: x })} />
+              <Toggle label="Interactive" value={b.interactive} onChange={x => sb({ interactive: x })} />
+              <Toggle label="Intro" value={b.intro} onChange={x => sb({ intro: x })} />
+              <Toggle label="Paused" value={b.paused} onChange={x => sb({ paused: x })} />
+            </div>
+            <button className="ghost small reset" onClick={() => onShine({ ...shine, ball: { ...DEFAULT_SHINE.ball } })}>↺ Reset</button>
+          </>
+        );
+      })()}
 
       {tab === 'zoom' && (
         <>

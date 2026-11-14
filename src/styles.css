@@ -119,7 +119,7 @@ nav button.icon { padding: 7px 10px; }
 .face.front { background: #eee; }
 .face.front img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.deck-hit { position: absolute; z-index: 700; background: none; border: 0; border-radius: 12px; cursor: pointer; padding: 0; }
+.deck-hit { position: absolute; z-index: 770; background: none; border: 0; border-radius: 12px; cursor: pointer; padding: 0; }
 .deck-hit.ready { box-shadow: 0 0 0 2px var(--gold), 0 0 30px rgba(var(--accent-rgb), .5); animation: pulse 1.6s infinite; }
 .deck-tip { position: absolute; left: 50%; bottom: -30px; transform: translateX(-50%); white-space: nowrap; font-size: 14px;
   background: var(--gold); color: var(--on-accent); padding: 4px 12px; border-radius: 999px; font-weight: 600; }
@@ -435,7 +435,7 @@ nav button svg { flex: none; opacity: .85; }
 .dec-embroidery .lit { fill: var(--gold); stroke: none; }
 
 /* Clarifying card button, next to the deck */
-.clar-btn { position: absolute; z-index: 720; display: flex; flex-direction: column; align-items: flex-start; gap: 1px;
+.clar-btn { position: absolute; z-index: 775; display: flex; flex-direction: column; align-items: flex-start; gap: 1px;
   width: 190px; padding: 8px 12px; border-radius: 12px; cursor: pointer; text-align: left;
   background: rgba(var(--panel-rgb), .9); border: 1px solid var(--gold); color: var(--ink);
   box-shadow: 0 6px 18px rgba(0,0,0,.5), 0 0 18px rgba(var(--accent-rgb), .25); animation: clar-in .35s ease-out; }
@@ -512,3 +512,21 @@ nav button svg { flex: none; opacity: .85; }
   .cloth-thumb { width: 52px; height: 52px; }
   .theme-pop { max-height: calc(100dvh - 90px - env(safe-area-inset-top)); }
 }
+
+/* ---------- 3D props, crystal ball, dramatic light ---------- */
+.props3d { position: absolute; inset: 0; pointer-events: none; }
+.props3d canvas { display: block; }
+.candle-pool { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(255, 196, 110, .34), rgba(255, 140, 50, .12) 32%, transparent 66%); animation: flicker 3.2s infinite ease-in-out; }
+.orb-ball { position: absolute; pointer-events: none; }
+.orb-ball::before { content: ''; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(circle, rgba(150, 110, 255, .22), transparent 62%); }
+/* Shadow under each card, cast away from the candles (top-left); offset is set per card so it ignores the card's own turn. */
+.card-shadow { position: absolute; inset: 0; border-radius: 8px; pointer-events: none; transition: box-shadow .5s; }
+.scene-vignette { position: absolute; inset: 0; pointer-events: none; z-index: 760; mix-blend-mode: multiply; }
+.scene-warmth { position: absolute; inset: 0; pointer-events: none; z-index: 761; mix-blend-mode: soft-light; }
+@media (prefers-reduced-motion: reduce) { .candle-pool { animation: none; } }
+.orb-ball > .crystalized-ball { position: absolute; inset: 0; }
+.orb-glass-dark { position: absolute; inset: 15%; border-radius: 50%;
+  background: radial-gradient(circle at 42% 38%, rgba(40, 26, 70, .92), rgba(8, 4, 16, .96) 70%);
+  box-shadow: inset 0 0 18px rgba(0,0,0,.9), 0 0 24px rgba(120, 90, 220, .35); }

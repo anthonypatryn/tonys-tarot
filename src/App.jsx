@@ -23,6 +23,14 @@ import { ShineContext, loadShine, saveShine, holoProps } from './shine.js';
 import { CLOTHS } from './themes.js';
 
 export const MAX_CLARIFIERS = 6;
+// A card's shadow falls away from the candles (down and to the right on screen), whichever way the card lies.
+function cardShadow(rotDeg, w, lifted) {
+  const k = lifted ? 2.2 : 1;
+  const sx = w * 0.07 * k, sy = w * 0.11 * k, blur = w * 0.12 * k;
+  const a = (-rotDeg * Math.PI) / 180;
+  const lx = sx * Math.cos(a) - sy * Math.sin(a), ly = sx * Math.sin(a) + sy * Math.cos(a);
+  return `${lx.toFixed(1)}px ${ly.toFixed(1)}px ${blur.toFixed(1)}px rgba(0,0,0,.6), ${(lx * 0.25).toFixed(1)}px ${(ly * 0.25).toFixed(1)}px ${(blur * 0.25).toFixed(1)}px rgba(0,0,0,.5)`;
+}
 const rnd = (a, b) => a + Math.random() * (b - a);
 // Small stable per-card wobble so the deck looks hand-stacked.
 const wobble = id => {
@@ -278,7 +286,7 @@ export default function App() {
 
   // Center a fitted cloth pattern on the open part of the table (not under the guide panel).
   const clothInset = Math.min(W, H) * 0.022;
-  const patternBox = theme.patternFit === 'cover' ? {} : {
+  const patternBox = (theme.patternFit || 'cover') === 'cover' ? {} : {
     left: L.area.left - clothInset, top: L.area.top - clothInset,
     width: L.area.right - L.area.left, height: L.area.bottom - L.area.top,
   };
@@ -288,7 +296,7 @@ export default function App() {
     <ShineContext.Provider value={shine}>
     <div className="app">
       <div className="table-wood" />
-      <div className={`cloth ${theme.pattern && theme.pattern !== 'none' && theme.patternMode === 'original' ? 'original' : ''} ${theme.patternFit === 'cover' ? 'fill' : ''}`}>
+      <div className={`cloth ${theme.pattern && theme.pattern !== 'none' && theme.patternMode === 'original' ? 'original' : ''} ${(theme.patternFit || 'cover') === 'cover' ? 'fill' : ''}`}>
         {theme.pattern && theme.pattern !== 'none' && CLOTHS[theme.pattern] && (
           theme.patternMode === 'original'
             ? <div className="cloth-pattern" style={{ ...patternBox, backgroundImage: `url(${CLOTHS[theme.pattern].img})`, opacity: theme.patternOpacity ?? 0.9 }} />
@@ -359,6 +367,7 @@ export default function App() {
               onClick={d ? () => flipCard(d.index) : undefined}
               onDoubleClick={d && flipped ? () => setFocus({ id: d.id, reversed: d.reversed, label: slotLabel(d) }) : undefined}
             >
+              {d && <div className="card-shadow" style={{ boxShadow: cardShadow(p.rot, L.cardW, lifting === p.card.id) }} />}
               <div className="card-inner" style={{ transform: flipped ? (axis === 'x' ? 'rotateX(180deg)' : 'rotateY(180deg)') : 'none' }}>
                 <div className="face back" style={{ backgroundImage: `url(${BACK_IMG})` }} />
                 <div className={`face front ${flipped && shine.holo ? 'holo' : ''}`} style={{ transform: axis === 'x' ? 'rotateX(180deg)' : 'rotateY(180deg)' }}>
@@ -372,6 +381,10 @@ export default function App() {
           );
         })}
       </div>
+
+      {/* Dramatic light: dark edges, the spread lit, warm candlelight from the top left */}
+      <div className="scene-vignette" style={{ background:
+        `radial-gradient(ellipse ${(L.area.right - L.area.left) * 0.72}px ${(L.area.bottom - L.area.top) * 0.78}px at ${L.area.cx}px ${L.area.cy}px, #fff 40%, #9a9a9a 76%, #3a3a3a 120%)` }} />
 
       {/* Deck hit area */}
       {view === 'table' && (
