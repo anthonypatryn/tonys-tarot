@@ -157,6 +157,13 @@ export default function Panel(p) {
           </div>
         )}
 
+        {phase === 'reveal' && allFlipped && (
+          <div className="summary-cta">
+            <p className="muted">All cards are turned over. Take your time with this one, or tap any card on the cloth to read it again.</p>
+            <button className="primary" onClick={p.onSummary}>See your full reading →</button>
+          </div>
+        )}
+
         {phase === 'done' && (
           <>
             <h2 className="sum-title">Your reading</h2>

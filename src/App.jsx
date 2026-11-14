@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { CARDS, CARD_BY_ID, shuffleDeck } from './deck.js';
 import { DECK_BY_KEY, DeckContext, cardImg, backImg, loadDeckChoice, saveDeckChoice } from './decks.js';
 import DeckPicker from './components/DeckPicker.jsx';
+import ThemePicker from './components/ThemePicker.jsx';
+import { applyTheme, loadTheme, saveTheme } from './themes.js';
 import { SPREADS, SPREAD_BY_ID } from './spreads.js';
 import { computeLayout } from './layout.js';
 import { sound } from './sound.js';
@@ -50,6 +52,9 @@ export default function App() {
   const [notes, setNotes] = useState('');
   const [soundOn, setSoundOn] = useState(sound.enabled);
   const [deckKey, setDeckKey] = useState(loadDeckChoice);
+  const [theme, setTheme] = useState(loadTheme);
+  const [themeOpen, setThemeOpen] = useState(false);
+  const changeTheme = t => { setTheme(t); applyTheme(t); saveTheme(t); };
   const timers = useRef([]);
   const chooseDeck = k => { setDeckKey(k); saveDeckChoice(k); setView('table'); };
   const ratio = DECK_BY_KEY[deckKey].ratio;
@@ -91,14 +96,13 @@ export default function App() {
     if (shuffling) return;
     setPhase('shuffle');
     setShuffling(true);
-    sound.shuffle(2.3);
+    sound.shuffle();
     setScatter(randomScatter());
     later(() => setScatter(randomScatter()), 850);
     later(() => {
       // The real shuffle: new order, and each card lands either way up at random.
       setDeck(shuffleDeck());
       setScatter(null);
-      sound.shuffle(0.6);
     }, 1750);
     later(() => { setShuffling(false); setShuffles(n => n + 1); }, 2650);
   };
@@ -115,7 +119,7 @@ export default function App() {
     const jitter = rnd(-2.5, 2.5); // hand-placed, never perfectly square
     setDrawn(d => [...d, { ...top, slot: d.length, flipped: false, axis, jitter }]);
     setLifting(top.id);
-    sound.slide();
+    sound.draw();
     later(() => setLifting(null), 750);
   }, [spread, deck, drawn.length, clarifiers, lifting]);
 
@@ -136,17 +140,21 @@ export default function App() {
     later(() => setSelected(i), 450);
   };
 
-  // All flipped -> done; save to history.
+  // All flipped: chime, but stay on the last card's reading until the user asks for the summary.
+  const allRevealed = !!spread && drawn.length >= spread.positions.length && drawn.every(c => c.flipped);
+  const chimed = useRef(false);
   useEffect(() => {
-    if (!spread || drawn.length === 0) return;
-    const allFlipped = drawn.length >= spread.positions.length && drawn.every(c => c.flipped);
-    if (phase === 'reveal' && allFlipped) {
-      later(() => { setPhase('done'); setSelected(null); sound.chime(); }, 900);
+    if (phase === 'reveal' && allRevealed && !chimed.current) {
+      chimed.current = true;
+      later(() => sound.chime(), 700);
     }
-  }, [drawn, phase, spread]);
+    if (phase === 'choose') chimed.current = false;
+  }, [allRevealed, phase]);
+  const showSummary = () => { setPhase('done'); setSelected(null); };
 
+  // Save to history once every card is turned over (and keep it updated: notes, clarifiers).
   useEffect(() => {
-    if (phase !== 'done' || !spread) return;
+    if (!allRevealed || (phase !== 'reveal' && phase !== 'done')) return;
     const id = readingId || `r${Date.now()}`;
     if (!readingId) setReadingId(id);
     upsertReading({
@@ -161,7 +169,7 @@ export default function App() {
         label: spread.positions[c.slot]?.label || `Clarifying card ${c.slot - spread.positions.length + 1}`,
       })),
     });
-  }, [phase, drawn, notes, question, spread, readingId, deckKey]);
+  }, [allRevealed, phase, drawn, notes, question, spread, readingId, deckKey]);
 
   // Clarifying card: add a slot, then draw into it once the new slot exists.
   const pendingClar = useRef(false);
@@ -240,6 +248,7 @@ export default function App() {
           <button className={view === 'browse' ? 'on' : ''} onClick={() => setView('browse')}>Browse</button>
           <button className={view === 'history' ? 'on' : ''} onClick={() => setView('history')}>History</button>
           <button className={view === 'guide' ? 'on' : ''} onClick={() => setView('guide')}>Guide</button>
+          <button className={`icon ${themeOpen ? 'on' : ''}`} onClick={() => setThemeOpen(o => !o)} title="Table theme" aria-label="Table theme">🎨</button>
           <button className="icon" onClick={toggleSound} title={soundOn ? 'Sound on' : 'Sound off'} aria-label="Toggle sound">
             {soundOn ? '🔊' : '🔇'}
           </button>
@@ -315,12 +324,13 @@ export default function App() {
         drawn={drawn} selected={selected} setSelected={setSelected} nextFlip={nextFlip}
         onFocus={setFocus} notes={notes} setNotes={setNotes} onClarify={requestClarifier}
         canClarify={deck.length > 0 && clarifiers < 3 && !lifting && drawn.every(c => c.flipped)}
-        onNew={resetAll}
+        onNew={resetAll} onSummary={showSummary}
       />
 
       {view === 'browse' && <Browse onClose={() => setView('table')} onOpen={c => setFocus({ id: c.id, browse: true })} />}
       {view === 'history' && <History onClose={() => setView('table')} onOpen={setFocus} />}
       {view === 'guide' && <Guide onClose={() => setView('table')} />}
+      {themeOpen && <ThemePicker theme={theme} onChange={changeTheme} onClose={() => setThemeOpen(false)} />}
       {view === 'decks' && <DeckPicker current={deckKey} onPick={chooseDeck} onClose={() => setView('table')} />}
       {focus && <CardReader {...focus} onClose={() => setFocus(null)} />}
     </div>
