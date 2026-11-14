@@ -530,3 +530,100 @@ nav button svg { flex: none; opacity: .85; }
 .orb-glass-dark { position: absolute; inset: 15%; border-radius: 50%;
   background: radial-gradient(circle at 42% 38%, rgba(40, 26, 70, .92), rgba(8, 4, 16, .96) 70%);
   box-shadow: inset 0 0 18px rgba(0,0,0,.9), 0 0 24px rgba(120, 90, 220, .35); }
+
+/* ---------- UI/UX pass ---------- */
+/* Main buttons stay in view at the bottom of the guide panel on every screen size. */
+.panel-body > .actions, .panel-body .summary-cta { position: sticky; bottom: -22px; z-index: 2; }
+.panel-body > .actions { background: linear-gradient(transparent, rgba(var(--panel-rgb), .97) 28%); padding: 12px 0 8px; margin-bottom: -8px; }
+.panel-body .summary-cta { background: rgba(var(--panel-rgb), .97); box-shadow: 0 -10px 18px rgba(var(--panel-rgb), .9); }
+/* Slot outlines read on busy printed cloths. */
+.slot { background: rgba(0, 0, 0, .3); box-shadow: 0 0 0 1px rgba(0, 0, 0, .35), inset 0 0 0 1px rgba(0, 0, 0, .25); }
+.slot.filled { box-shadow: none; }
+.slot-num { color: var(--gold); text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+/* Step labels follow the theme and stay readable. */
+.steps span { color: var(--ink-dim); opacity: .7; font-size: 11.5px; }
+.steps span.now { opacity: 1; }
+.steps span.past { opacity: .85; }
+.panel.sheet .steps span, .panel.short .steps span { font-size: 10.5px; }
+nav button .short { display: none; }
+@media (max-width: 639px) {
+  nav button .long { display: none; }
+  nav button .short { display: inline; }
+  nav button { font-size: 10.5px; }
+}
+
+/* ---------- My Readings: calendar, insights, filters ---------- */
+.readings-layout { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 24px; align-items: start; }
+.readings-side { position: sticky; top: 0; display: flex; flex-direction: column; gap: 16px; }
+.readings-main { min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.empty-note { max-width: 520px; margin: 40px auto; font-size: 18px; }
+.cal, .insights { border: 1px solid rgba(var(--accent-rgb), .25); border-radius: 14px; background: rgba(255,255,255,.03); padding: 12px; }
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.cal-head b { font-family: var(--display); color: var(--gold); font-size: 18px; letter-spacing: .04em; }
+.cal-nav { width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(var(--accent-rgb), .35); background: none; color: var(--gold); font-size: 22px; cursor: pointer; }
+.cal-nav:hover { background: rgba(var(--accent-rgb), .12); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-wd { text-align: center; font-size: 12px; color: var(--ink-dim); padding-bottom: 2px; }
+.cal-day { position: relative; aspect-ratio: .78; border: 1px solid rgba(var(--accent-rgb), .12); border-radius: 7px; background: rgba(0,0,0,.18);
+  color: var(--ink); padding: 0; overflow: hidden; cursor: default; font: inherit; }
+.cal-day.out { opacity: .35; }
+.cal-day.has { cursor: pointer; border-color: rgba(var(--accent-rgb), .55); }
+.cal-day.has:hover { box-shadow: 0 0 0 2px var(--gold); }
+.cal-day img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .85; }
+.cal-num { position: absolute; left: 3px; top: 2px; font-size: 12px; font-weight: 600; text-shadow: 0 1px 3px #000, 0 0 2px #000; }
+.cal-day.today { box-shadow: inset 0 0 0 2px var(--gold); }
+.cal-day.sel { box-shadow: 0 0 0 3px var(--gold), 0 0 14px rgba(var(--accent-rgb), .6); }
+.cal-count { position: absolute; right: 2px; bottom: 2px; min-width: 16px; height: 16px; border-radius: 8px; background: var(--gold); color: var(--on-accent);
+  font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+.insights h4 { font-family: var(--display); color: var(--gold); font-size: 14px; letter-spacing: .05em; margin: 14px 0 8px; }
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.stat { text-align: center; padding: 8px 2px; border-radius: 10px; background: rgba(0,0,0,.22); }
+.stat b { display: block; font-family: var(--display); font-size: 22px; color: var(--gold); }
+.stat small { font-size: 12px; color: var(--ink-dim); line-height: 1.2; display: block; }
+.top-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.top-card { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.top-card img { width: 64px; border-radius: 5px; box-shadow: 0 4px 10px rgba(0,0,0,.5); }
+.top-card b { display: block; font-size: 13px; line-height: 1.2; }
+.top-card small { color: var(--ink-dim); font-size: 12px; }
+.suit-bars { display: grid; gap: 6px; }
+.suit-bar { display: grid; grid-template-columns: 104px 1fr 28px; align-items: center; gap: 8px; font-size: 13px; }
+.suit-bar i { height: 8px; border-radius: 4px; background: rgba(255,255,255,.08); overflow: hidden; }
+.suit-bar em { display: block; height: 100%; background: linear-gradient(90deg, var(--gold-lo), var(--gold-hi)); border-radius: 4px; }
+.suit-bar small { color: var(--ink-dim); text-align: right; }
+.backup { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.backup-note { width: 100%; color: var(--ink-dim); }
+.h-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.h-filters input, .h-filters select { flex: 1 1 200px; min-height: 44px; padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(var(--accent-rgb), .35);
+  background: rgba(0,0,0,.3); color: var(--ink); font: inherit; font-size: 16px; }
+.h-filters select option { background: #1a1418; color: #eee; }
+.day-chip { align-self: flex-start; }
+.h-thumbs img { width: 42px; }
+@media (max-width: 860px) {
+  .readings-layout { grid-template-columns: 1fr; }
+  .readings-side { position: static; }
+}
+.readings-main .history { max-width: none; width: 100%; }
+.steps span { opacity: .9; font-size: 12px; }
+.panel.sheet .steps span, .panel.short .steps span { font-size: 10.5px; }
+.deck-count { font-size: 12px; }
+.swatch small, .cloth-choice small { font-size: 12px; }
+.cal-count { font-size: 12px; min-width: 18px; height: 18px; border-radius: 9px; }
+/* Phones: the clarifier button sits beside the deck with its bottom on the deck's bottom, so it never slides under the sheet. */
+.clar-btn.side { transform: translateY(-100%); }
+.clar-btn.side small { font-size: 12px; }
+.sheet-handle small { font-size: 12px; }
+@media (max-width: 639px) {
+  nav button { font-size: 11px; }
+  .panel.sheet .steps span { font-size: 11px; letter-spacing: 0; }
+  .chip { min-height: 44px; }
+  .sheet-handle { min-height: 40px; }
+  .close, .small-close { min-width: 44px; min-height: 44px; }
+  .ghost.small { min-height: 44px; }
+  .ctl { min-height: 46px; }
+  .ctl select { min-height: 44px; padding-left: 8px; }
+  .ctl-color input[type=color] { width: 36px; height: 36px; }
+  .ctl-color input[type=text] { min-height: 36px; }
+  .theme-custom input[type=color] { width: 44px; height: 44px; }
+  .cal-nav { width: 44px; height: 44px; }
+}
+@media (max-width: 639px) { input.search, .h-filters input, .h-filters select { min-height: 44px; } }

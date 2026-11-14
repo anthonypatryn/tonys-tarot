@@ -116,7 +116,7 @@ export default function ThemePicker({ theme, onChange, shine, onShine, onClose }
               {theme.patternMode !== 'original' && (
                 <Color label="Tint" value={theme.patternColor || theme.accent} onChange={v => setPat({ patternColor: v })} />
               )}
-              <Slider label="Strength" value={theme.patternOpacity ?? 0.9} min={0.1} max={1} step={0.05} onChange={v => setPat({ patternOpacity: v })} fmt={v => v.toFixed(2)} />
+              <Slider label="Strength" value={theme.patternOpacity ?? 0.6} min={0.1} max={1} step={0.05} onChange={v => setPat({ patternOpacity: v })} fmt={v => v.toFixed(2)} />
               <Select label="Size" value={theme.patternFit || 'cover'} onChange={v => setPat({ patternFit: v })}
                 options={[['cover', 'Edge to edge'], ['contain', 'Fit whole design']]} />
             </div>

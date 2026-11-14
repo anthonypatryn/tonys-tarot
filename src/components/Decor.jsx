@@ -53,15 +53,16 @@ function propLayout(L) {
   const r = short ? 15 : Math.max(17, Math.min(28, m * 0.033));
   const d = short ? 70 : Math.max(96, Math.min(170, m * 0.19));
   const cs = short ? 0 : Math.max(96, Math.min(160, m * 0.17));
+  // Candles top-left, crystals top-right, the ball bottom-right: clear of the deck, its tips and the clarifier button.
   return {
     candles: [
       { x: area.left + r * 1.9, y: area.top + r * 1.8, r },
       { x: area.left + r * 4.4, y: area.top + r * 1.2, r: r * 0.72, dark: true },
       { x: area.left + r * 3.8, y: area.top + r * 3.9, r: r * 0.55 },
-      { x: area.right - r * 1.7, y: area.top + r * 1.5, r: r * 0.85 },
+      { x: area.right - r * 1.4 - (short ? 0 : cs * 0.95), y: area.top + r * 1.3, r: r * 0.8 },
     ],
-    orb: { x: area.left + d * 0.85, y: area.bottom - d * 0.85, d },
-    crystals: short ? null : { x: area.right - cs * 0.75, y: area.bottom - cs * 0.62, s: cs },
+    orb: { x: area.right - d * 0.8, y: area.bottom - d * 0.8, d },
+    crystals: short ? null : { x: area.right - cs * 0.45, y: area.top + cs * 0.4, s: cs },
   };
 }
 

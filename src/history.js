@@ -14,7 +14,12 @@ function write(all) {
 export function upsertReading(reading) {
   const all = loadHistory();
   const i = all.findIndex(r => r.id === reading.id);
-  if (i >= 0) all[i] = reading; else all.unshift(reading);
+  // Keep the date of the first save, so editing the journal later doesn't move the reading to another day.
+  if (i >= 0) all[i] = { ...reading, date: all[i].date || reading.date }; else all.unshift(reading);
+  return write(all);
+}
+
+export function replaceHistory(all) {
   return write(all);
 }
 

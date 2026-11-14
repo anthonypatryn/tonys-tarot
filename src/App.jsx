@@ -9,7 +9,7 @@ const TOUCH = typeof window !== 'undefined' && window.matchMedia?.('(pointer: co
 const verb = TOUCH ? 'Tap' : 'Click';
 import { applyTheme, loadTheme, saveTheme } from './themes.js';
 import { SPREADS, SPREAD_BY_ID } from './spreads.js';
-import { computeLayout } from './layout.js';
+import { computeLayout, maxClarifiers } from './layout.js';
 import { sound } from './sound.js';
 import { upsertReading } from './history.js';
 import Panel from './components/Panel.jsx';
@@ -233,8 +233,9 @@ export default function App() {
     return null;
   })();
   const clarTarget = lastFlipped && (spread?.positions[lastFlipped.slot]?.label || lastFlipped.clarifies || 'Clarifying card');
+  const clarRoom = useMemo(() => (spread ? maxClarifiers(W, H, spread, ratio, MAX_CLARIFIERS) : 0), [W, H, spread, ratio]);
   const canClarify = !!spread && (phase === 'reveal' || phase === 'done') && !!lastFlipped && deck.length > 0
-    && clarifiers < MAX_CLARIFIERS && !lifting && !drawn.some(c => c.slot >= spread.positions.length && !c.flipped);
+    && clarifiers < clarRoom && !lifting && !drawn.some(c => c.slot >= spread.positions.length && !c.flipped);
   const requestClarifier = () => {
     if (!canClarify) return;
     pendingClar.current = { clarifies: clarTarget };
@@ -299,10 +300,10 @@ export default function App() {
       <div className={`cloth ${theme.pattern && theme.pattern !== 'none' && theme.patternMode === 'original' ? 'original' : ''} ${(theme.patternFit || 'cover') === 'cover' ? 'fill' : ''}`}>
         {theme.pattern && theme.pattern !== 'none' && CLOTHS[theme.pattern] && (
           theme.patternMode === 'original'
-            ? <div className="cloth-pattern" style={{ ...patternBox, backgroundImage: `url(${CLOTHS[theme.pattern].img})`, opacity: theme.patternOpacity ?? 0.9 }} />
+            ? <div className="cloth-pattern" style={{ ...patternBox, backgroundImage: `url(${CLOTHS[theme.pattern].img})`, opacity: theme.patternOpacity ?? 0.6 }} />
             : <div className="cloth-pattern tint" style={{ ...patternBox,
                 WebkitMaskImage: `url(${CLOTHS[theme.pattern].mask})`, maskImage: `url(${CLOTHS[theme.pattern].mask})`,
-                background: theme.patternColor || theme.accent, opacity: theme.patternOpacity ?? 0.9 }} />
+                background: theme.patternColor || theme.accent, opacity: theme.patternOpacity ?? 0.6 }} />
         )}
         <div className="cloth-trim" />
       </div>
@@ -313,10 +314,10 @@ export default function App() {
           <span className="brand-star">✦</span> Tony’s Tarot
         </button>
         <nav>
-          <button className={view === 'table' ? 'on' : ''} onClick={() => setView('table')}><IconReading /><span>Reading</span></button>
+          <button className={view === 'table' ? 'on' : ''} onClick={() => setView('table')}><IconReading /><span>Table</span></button>
           <button className={view === 'decks' ? 'on' : ''} onClick={() => setView('decks')}><IconDecks /><span>Decks</span></button>
           <button className={view === 'browse' ? 'on' : ''} onClick={() => setView('browse')}><IconBrowse /><span>Browse</span></button>
-          <button className={view === 'history' ? 'on' : ''} onClick={() => setView('history')}><IconHistory /><span>History</span></button>
+          <button className={view === 'history' ? 'on' : ''} onClick={() => setView('history')}><IconHistory /><span className="long">My Readings</span><span className="short">Readings</span></button>
           <button className={view === 'guide' ? 'on' : ''} onClick={() => setView('guide')}><IconGuide /><span>Guide</span></button>
           <button className={themeOpen ? 'on' : ''} onClick={() => setThemeOpen(o => !o)} title="Table theme" aria-label="Table theme"><IconTheme /><span>Theme</span></button>
           <button onClick={toggleSound} title={soundOn ? 'Sound on' : 'Sound off'} aria-label="Toggle sound">
@@ -341,7 +342,7 @@ export default function App() {
               // Phones: a small number badge; the position names are listed in the guide sheet.
               <span className="slot-badge">{pos ? i + 1 : '✦'}</span>
             ) : (
-              <span className="slot-label" style={{ top: L.cardH + 6, maxWidth: L.cardW * 1.24, fontSize: Math.max(11, Math.min(15, L.cardW * 0.11)) }}>
+              <span className="slot-label" style={{ top: L.cardH + 6, maxWidth: L.cardW * 1.24, fontSize: Math.max(12, Math.min(15, L.cardW * 0.11)) }}>
                 <b>{pos ? `${i + 1}.` : '✦'}</b> {label}
               </span>
             )}
@@ -406,10 +407,10 @@ export default function App() {
       {view === 'table' && canClarify && (
         <button className={`clar-btn ${L.narrow ? 'side' : ''}`} onClick={requestClarifier}
           style={L.narrow
-            ? { left: L.deck.x + L.cardW / 2 + 12, top: L.deck.y, maxWidth: Math.max(110, L.W - (L.deck.x + L.cardW / 2 + 12) - 10) }
+            ? { left: L.deck.x + L.cardW / 2 + 12, top: L.deck.y + L.cardH / 2, maxWidth: Math.max(110, L.W - (L.deck.x + L.cardW / 2 + 12) - 10) }
             : { left: Math.max(L.area.left + 4, L.deck.x - 95), top: L.deck.y + L.cardH / 2 + 14 }}>
           <b>+ Clarifying card</b>
-          <small>for “{clarTarget}” · {MAX_CLARIFIERS - clarifiers} left</small>
+          <small>for “{clarTarget}” · {clarRoom - clarifiers} left</small>
         </button>
       )}
 

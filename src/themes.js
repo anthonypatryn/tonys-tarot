@@ -28,6 +28,13 @@ const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
 const shade = (rgb, t) => mix(rgb, t < 0 ? [0, 0, 0] : [255, 255, 255], Math.abs(t));
 const lum = ([r, g, b]) => (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
 
+// Text color for a solid accent-colored button: whichever of near-black or white reads better on it.
+const contrastRatio = (x, y) => { const [p, q] = [lumW(x), lumW(y)].sort((m, n) => n - m); return (p + 0.05) / (q + 0.05); };
+const lumW = rgb => { const [r, g, b] = rgb.map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+function onColor(bg, dark) {
+  return contrastRatio(bg, dark) >= contrastRatio(bg, [255, 255, 255]) ? rgbToHex(dark) : '#ffffff';
+}
+
 export function themeVars({ cloth, accent, ink }) {
   const c = hexToRgb(cloth), a = hexToRgb(accent), k = hexToRgb(ink);
   const panel = shade(c, -0.86);
@@ -40,7 +47,7 @@ export function themeVars({ cloth, accent, ink }) {
     '--accent-rgb': a.join(', '),
     '--gold-hi': rgbToHex(shade(a, 0.15)),
     '--gold-lo': rgbToHex(shade(a, -0.15)),
-    '--on-accent': lum(a) > 0.55 ? rgbToHex(shade(c, -0.8)) : '#ffffff',
+    '--on-accent': onColor(a, shade(c, -0.8)),
     '--panel-rgb': panel.map(Math.round).join(', '),
     '--ink': ink,
     '--ink-dim': rgbToHex(mix(k, panel, 0.25)),
