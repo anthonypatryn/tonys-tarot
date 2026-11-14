@@ -18,5 +18,21 @@
  "thoth": {
   "ratio": 1.4908,
   "cards": 78
+ },
+ "rider": {
+  "ratio": 1.6667,
+  "cards": 78
+ },
+ "marseillebd": {
+  "ratio": 1.9708,
+  "cards": 78
+ },
+ "marseillecc": {
+  "ratio": 1.8993,
+  "cards": 78
+ },
+ "etteilla": {
+  "ratio": 1.926,
+  "cards": 78
  }
 }

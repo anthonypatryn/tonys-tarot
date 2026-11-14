@@ -13,6 +13,19 @@ DECKS = {
     'newvision': 'NewV',
     'viceversa': 'VicV',
     'thoth': 'Thot',
+    'rider': 'RWSa',
+    'marseillebd': 'MaBD',
+    'marseillecc': 'MaNC',
+    'etteilla': 'GrEt',
+}
+# Optional: only convert these deck keys (others keep their existing output and metadata).
+ONLY = sys.argv[4].split(',') if len(sys.argv) > 4 else None
+
+LATIN_SUITS = {'B': 'W', 'C': 'C', 'D': 'P', 'S': 'S'}  # batons, coupes, deniers, epees
+# Grand Etteilla trump number -> nearest traditional trump (canonical id).
+ETTEILLA_TRUMPS = {
+    0: 0, 1: 4, 2: 19, 3: 18, 4: 17, 5: 21, 6: 2, 7: 6, 8: 3, 9: 11, 10: 14,
+    11: 8, 12: 12, 13: 5, 14: 15, 15: 1, 16: 20, 17: 13, 18: 9, 19: 16, 20: 10, 21: 7,
 }
 
 def canonical(deck, stem):
@@ -30,6 +43,16 @@ def canonical(deck, stem):
         suit = {'D': 'P'}.get(suit, suit)  # Disks -> Pentacles
         rank = {'PS': 'J1', 'PN': 'J2', 'KN': 'KI'}.get(rank, rank)  # Princess, Prince, Knight
         return f'{suit}-{rank}'
+    if deck in ('MaBD', 'MaNC', 'GrEt'):
+        suit, rank = stem.split('-')
+        if suit == 'T':
+            n = int(rank)
+            if deck == 'GrEt':
+                return f'T-{ETTEILLA_TRUMPS[n]:02d}'
+            # Marseille numbers Justice VIII and Strength XI.
+            return {'T-08': 'T-11', 'T-11': 'T-08'}.get(stem, stem)
+        rank = '0A' if rank == '01' else rank
+        return f'{LATIN_SUITS[suit]}-{rank}'
     return stem
 
 def make_back(path, w, h):
@@ -50,8 +73,10 @@ def make_back(path, w, h):
     d.ellipse([cx - R // 2, cy - R // 2, cx + R // 2, cy + R // 2], outline=gold, width=2)
     im.save(path, quality=85)
 
-meta = {}
+meta = json.load(open(OUT_JSON)) if os.path.exists(OUT_JSON) else {}
 for key, deck in DECKS.items():
+    if ONLY and key not in ONLY:
+        continue
     out = os.path.join(PUB, key)
     os.makedirs(out, exist_ok=True)
     ratios, count = [], 0
