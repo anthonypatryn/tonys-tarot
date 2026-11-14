@@ -4,5 +4,3 @@ source_png/
 .claude/
 .vercel/
 *.log
-public/decks-local/
-src/decks.local.json
