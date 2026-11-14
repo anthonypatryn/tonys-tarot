@@ -89,7 +89,7 @@ export default function Panel(p) {
           <b>Tip:</b> Ask open-ended questions (how, what, why) instead of yes/no ones. For example, try “How can I meet my ideal partner?” rather than “Will I meet my ideal partner?” Focused questions give clearer readings.
         </div>
         <div className="actions">
-          <button className="ghost" onClick={p.onBack}>← Other readings</button>
+          <button className="ghost" onClick={p.onBack}>← Back</button>
           <button className="primary" onClick={p.onShuffle}>Shuffle the deck</button>
         </div>
       </>
@@ -119,7 +119,7 @@ export default function Panel(p) {
         {p.question && <blockquote className="the-q">“{p.question}”</blockquote>}
         {n < spread.positions.length && (
           <p className="lead big-instruction">
-            Click the deck to place a card in <b>position {n + 1}: {spread.positions[n].label}</b>.
+            {p.verb} the deck to place a card in <b>position {n + 1}: {spread.positions[n].label}</b>.
           </p>
         )}
         <ol className="positions">
@@ -140,7 +140,7 @@ export default function Panel(p) {
 
         {!allFlipped && p.nextFlip >= 0 && (
           <p className="lead big-instruction">
-            Turn over <b>{p.drawn[p.nextFlip].slot < spread.positions.length ? `position ${p.drawn[p.nextFlip].slot + 1}: ` : ''}{label(p.nextFlip)}</b>. Click the glowing card.
+            Turn over <b>{p.drawn[p.nextFlip].slot < spread.positions.length ? `position ${p.drawn[p.nextFlip].slot + 1}: ` : ''}{label(p.nextFlip)}</b>. {p.verb} the glowing card.
           </p>
         )}
 
@@ -201,7 +201,13 @@ export default function Panel(p) {
   }
 
   return (
-    <aside className={`panel ${L.narrow ? 'sheet' : ''}`} style={L.narrow ? { height: L.sheetH } : { width: L.panelW }}>
+    <aside className={`panel ${L.narrow ? 'sheet' : ''} ${L.short ? 'short' : ''} ${p.collapsed ? 'collapsed' : ''}`} style={L.narrow ? { height: L.sheetH } : { width: L.panelW }}>
+      {L.narrow && (
+        <button className="sheet-handle" onClick={p.onToggleSheet} aria-label={p.collapsed ? 'Show guide' : 'Hide guide to see the table'}>
+          <span className="grip" />
+          <small>{p.collapsed ? 'Show guide ▲' : 'See the table ▼'}</small>
+        </button>
+      )}
       <div className="steps">
         {STEPS.map(([k, name], i) => (
           <span key={k} className={i < stepIdx ? 'past' : i === stepIdx ? 'now' : ''}>{name}</span>

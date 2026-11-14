@@ -3,6 +3,10 @@ import { CARDS, CARD_BY_ID, shuffleDeck } from './deck.js';
 import { DECK_BY_KEY, DeckContext, cardImg, backImg, loadDeckChoice, saveDeckChoice } from './decks.js';
 import DeckPicker from './components/DeckPicker.jsx';
 import ThemePicker from './components/ThemePicker.jsx';
+import { IconReading, IconDecks, IconBrowse, IconHistory, IconGuide, IconTheme, IconSound } from './components/Icons.jsx';
+
+const TOUCH = typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
+const verb = TOUCH ? 'Tap' : 'Click';
 import { applyTheme, loadTheme, saveTheme } from './themes.js';
 import { SPREADS, SPREAD_BY_ID } from './spreads.js';
 import { computeLayout } from './layout.js';
@@ -22,12 +26,26 @@ const wobble = id => {
   return ((h % 100) / 100) * 2.4 - 1.2;
 };
 
+// Track the visible viewport (on phones this changes as the browser bars show/hide or the keyboard opens).
 function useSize() {
-  const [size, setSize] = useState({ W: window.innerWidth, H: window.innerHeight });
+  const read = () => ({ W: window.innerWidth, H: Math.round(window.visualViewport?.height ?? window.innerHeight) });
+  const [size, setSize] = useState(read);
   useEffect(() => {
-    const on = () => setSize({ W: window.innerWidth, H: window.innerHeight });
+    const on = () => setSize(prev => {
+      const next = read();
+      // Ignore the on-screen keyboard shrinking the height a lot: keep the table steady while typing.
+      const typing = document.activeElement?.matches?.('textarea, input');
+      if (typing && next.W === prev.W && next.H < prev.H) return prev;
+      return next.W === prev.W && next.H === prev.H ? prev : next;
+    });
     window.addEventListener('resize', on);
-    return () => window.removeEventListener('resize', on);
+    window.visualViewport?.addEventListener('resize', on);
+    window.addEventListener('orientationchange', on);
+    return () => {
+      window.removeEventListener('resize', on);
+      window.visualViewport?.removeEventListener('resize', on);
+      window.removeEventListener('orientationchange', on);
+    };
   }, []);
   return size;
 }
@@ -62,7 +80,12 @@ export default function App() {
 
   const spread = SPREAD_BY_ID[spreadId] || SPREAD_BY_ID[previewId] || null;
   const layoutSpread = spread || SPREAD_BY_ID['ppf'];
-  const L = useMemo(() => computeLayout(W, H, layoutSpread, clarifiers, ratio), [W, H, layoutSpread, clarifiers, ratio]);
+  const [sheetCollapsed, setSheetCollapsed] = useState(false);
+  useEffect(() => { setSheetCollapsed(false); }, [phase]); // each new step opens the guide again
+  const L = useMemo(
+    () => computeLayout(W, H, layoutSpread, clarifiers, ratio, { phase, collapsed: sheetCollapsed }),
+    [W, H, layoutSpread, clarifiers, ratio, phase, sheetCollapsed],
+  );
 
   const later = (fn, ms) => timers.current.push(setTimeout(fn, ms));
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
@@ -133,7 +156,12 @@ export default function App() {
   const flipCard = i => {
     const c = drawn[i];
     if (!c) return;
-    if (c.flipped) { setSelected(i); return; }
+    if (c.flipped) {
+      // Tap once to show it in the guide; tap the same card again to open the large reader.
+      if (selected === i) setFocus({ id: c.id, reversed: c.reversed, label: spread?.positions[c.slot]?.label || 'Clarifying card' });
+      else { setSelected(i); setSheetCollapsed(false); }
+      return;
+    }
     if (phase !== 'reveal' && phase !== 'done') return;
     sound.flip();
     setDrawn(d => d.map((x, k) => (k === i ? { ...x, flipped: true } : x)));
@@ -240,17 +268,17 @@ export default function App() {
 
       <header className="topbar">
         <button className="brand" onClick={() => setView('table')}>
-          <span className="brand-star">✦</span> Tarot Table
+          <span className="brand-star">✦</span> Tony’s Tarot
         </button>
         <nav>
-          <button className={view === 'table' ? 'on' : ''} onClick={() => setView('table')}>Reading</button>
-          <button className={view === 'decks' ? 'on' : ''} onClick={() => setView('decks')}>Deck art</button>
-          <button className={view === 'browse' ? 'on' : ''} onClick={() => setView('browse')}>Browse</button>
-          <button className={view === 'history' ? 'on' : ''} onClick={() => setView('history')}>History</button>
-          <button className={view === 'guide' ? 'on' : ''} onClick={() => setView('guide')}>Guide</button>
-          <button className={`icon ${themeOpen ? 'on' : ''}`} onClick={() => setThemeOpen(o => !o)} title="Table theme" aria-label="Table theme">🎨</button>
-          <button className="icon" onClick={toggleSound} title={soundOn ? 'Sound on' : 'Sound off'} aria-label="Toggle sound">
-            {soundOn ? '🔊' : '🔇'}
+          <button className={view === 'table' ? 'on' : ''} onClick={() => setView('table')}><IconReading /><span>Reading</span></button>
+          <button className={view === 'decks' ? 'on' : ''} onClick={() => setView('decks')}><IconDecks /><span>Decks</span></button>
+          <button className={view === 'browse' ? 'on' : ''} onClick={() => setView('browse')}><IconBrowse /><span>Browse</span></button>
+          <button className={view === 'history' ? 'on' : ''} onClick={() => setView('history')}><IconHistory /><span>History</span></button>
+          <button className={view === 'guide' ? 'on' : ''} onClick={() => setView('guide')}><IconGuide /><span>Guide</span></button>
+          <button className={themeOpen ? 'on' : ''} onClick={() => setThemeOpen(o => !o)} title="Table theme" aria-label="Table theme"><IconTheme /><span>Theme</span></button>
+          <button onClick={toggleSound} title={soundOn ? 'Sound on' : 'Sound off'} aria-label="Toggle sound">
+            <IconSound on={soundOn} /><span>Sound</span>
           </button>
         </nav>
       </header>
@@ -264,11 +292,17 @@ export default function App() {
           filled && drawn[i] && i === nextFlip ? 'flip-next' : ''].join(' ');
         return (
           <div key={`${spread.id}-${i}`} className={cls}
-            style={{ left: s.x - L.cardW / 2, top: s.y - L.cardH / 2, width: L.cardW, height: L.cardH, animationDelay: `${i * 90}ms` }}>
+            style={{ left: s.x - L.cardW / 2, top: s.y - L.cardH / 2, width: L.cardW, height: L.cardH, animationDelay: `${i * 90}ms`,
+              ...(L.compact && filled ? { zIndex: 640 } : null) }}>
             {!filled && <span className="slot-num" style={{ fontSize: L.cardW * 0.32 }}>{pos ? i + 1 : '+'}</span>}
-            <span className="slot-label" style={{ top: L.cardH + 6, maxWidth: L.cardW * 1.24, fontSize: Math.max(11, Math.min(15, L.cardW * 0.11)) }}>
-              <b>{pos ? `${i + 1}.` : '✦'}</b> {label}
-            </span>
+            {L.compact ? (
+              // Phones: a small number badge; the position names are listed in the guide sheet.
+              <span className="slot-badge">{pos ? i + 1 : '✦'}</span>
+            ) : (
+              <span className="slot-label" style={{ top: L.cardH + 6, maxWidth: L.cardW * 1.24, fontSize: Math.max(11, Math.min(15, L.cardW * 0.11)) }}>
+                <b>{pos ? `${i + 1}.` : '✦'}</b> {label}
+              </span>
+            )}
           </div>
         );
       })}
@@ -304,15 +338,15 @@ export default function App() {
 
       {/* Deck hit area */}
       {view === 'table' && (
-        <button className={`deck-hit ${phase === 'draw' && !lifting ? 'ready' : ''}`}
+        <button className={`deck-hit ${phase === 'draw' && !lifting ? 'ready' : ''} ${L.narrow ? 'tip-above' : ''}`}
           style={{ left: L.deck.x - L.cardW / 2 - 6, top: L.deck.y - L.cardH / 2 - 22, width: L.cardW + 12, height: L.cardH + 28 }}
           onClick={() => {
             if (phase === 'draw') drawCard();
             else if (phase === 'question' || (phase === 'shuffle' && !shuffling)) doShuffle();
           }}
           aria-label="Deck">
-          {phase === 'draw' && !lifting && <span className="deck-tip">Click to draw</span>}
-          {(phase === 'question' || (phase === 'shuffle' && !shuffling)) && <span className="deck-tip soft">Click to shuffle</span>}
+          {phase === 'draw' && !lifting && <span className="deck-tip">{verb} to draw</span>}
+          {(phase === 'question' || (phase === 'shuffle' && !shuffling)) && <span className="deck-tip soft">{verb} to shuffle</span>}
           <span className="deck-count">{deck.length}</span>
         </button>
       )}
@@ -324,7 +358,8 @@ export default function App() {
         drawn={drawn} selected={selected} setSelected={setSelected} nextFlip={nextFlip}
         onFocus={setFocus} notes={notes} setNotes={setNotes} onClarify={requestClarifier}
         canClarify={deck.length > 0 && clarifiers < 3 && !lifting && drawn.every(c => c.flipped)}
-        onNew={resetAll} onSummary={showSummary}
+        onNew={resetAll} onSummary={showSummary} verb={verb}
+        collapsed={sheetCollapsed} onToggleSheet={() => setSheetCollapsed(c => !c)}
       />
 
       {view === 'browse' && <Browse onClose={() => setView('table')} onOpen={c => setFocus({ id: c.id, browse: true })} />}

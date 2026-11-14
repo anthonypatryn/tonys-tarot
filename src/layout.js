@@ -1,7 +1,11 @@
 // Computes pixel positions on the cloth for the deck and each spread slot.
+//
+// Three shapes:
+//  - wide (desktop/tablet landscape): guide panel on the right, deck on the left of the spread.
+//  - short (phone landscape): same, with a slimmer panel and top bar.
+//  - narrow (phone portrait): guide is a bottom sheet whose height follows the step;
+//    the deck sits at the bottom-center of the table ("in front of you") so the spread gets the full width.
 export const CARD_RATIO = 2624 / 1500; // height / width of the real cards
-const COL = 1.28; // horizontal distance between slot centers, in card widths
-const ROW = 1.2;  // vertical distance between slot centers, in card heights (leaves room for labels)
 
 export function slotUnits(spread, clarifiers = 0) {
   const units = spread.positions.map(p => ({ x: p.x, y: p.y }));
@@ -13,12 +17,24 @@ export function slotUnits(spread, clarifiers = 0) {
   return units;
 }
 
-export function computeLayout(W, H, spread, clarifiers = 0, ratio = CARD_RATIO) {
-  const narrow = W < 860;
-  const topBar = narrow ? 58 : 66;
-  const margin = narrow ? 10 : 22;
-  const panelW = narrow ? 0 : Math.min(470, Math.max(360, W * 0.34));
-  const sheetH = narrow ? Math.round(H * 0.44) : 0;
+// Bottom-sheet height (fraction of screen) for each step on phones.
+const SHEET = { choose: 0.58, question: 0.58, shuffle: 0.34, draw: 0.3, reveal: 0.46, done: 0.58 };
+export const SHEET_PEEK = 104; // collapsed sheet height in px
+
+export function isNarrow(W, H) {
+  return W < 640 || (W < 900 && H >= W);
+}
+
+export function computeLayout(W, H, spread, clarifiers = 0, ratio = CARD_RATIO, { phase = 'choose', collapsed = false } = {}) {
+  const narrow = isNarrow(W, H);
+  const short = !narrow && H < 560;
+  const topBar = narrow ? 64 : short ? 52 : 66;
+  const margin = narrow ? 8 : short ? 12 : 22;
+  const panelW = narrow ? 0 : short ? Math.round(Math.min(380, Math.max(300, W * 0.42))) : Math.min(470, Math.max(360, W * 0.34));
+  const sheetH = narrow ? (collapsed ? SHEET_PEEK : Math.round(H * (SHEET[phase] ?? 0.46))) : 0;
+  const compact = narrow || short; // phones: number badges instead of label pills
+  const COL = compact ? 1.16 : 1.28; // slot spacing in card widths
+  const ROW = compact ? 1.1 : 1.2;   // slot spacing in card heights (phones show number badges, not label pills)
 
   const units = slotUnits(spread, clarifiers);
   const minX = Math.min(...units.map(u => u.x)), maxX = Math.max(...units.map(u => u.x));
@@ -27,37 +43,48 @@ export function computeLayout(W, H, spread, clarifiers = 0, ratio = CARD_RATIO) 
   const spanRows = ((maxY - minY) * ROW + ROW) * ratio;
 
   const areaTop = topBar + margin;
-  const areaBottom = H - margin - sheetH;
-  const areaH = Math.max(120, areaBottom - areaTop);
+  const areaBottom = H - margin - sheetH - (narrow ? 6 : 0);
+  const areaH = Math.max(100, areaBottom - areaTop);
   const fullLeft = margin;
   const fullRight = W - margin - panelW;
 
-  // Two passes: deck zone width depends on card width.
-  let cardW = 150;
-  for (let pass = 0; pass < 3; pass++) {
-    const deckZone = cardW * 1.55 + 16;
-    const areaW = fullRight - fullLeft - deckZone;
-    cardW = Math.min(areaW / spanCols, areaH / spanRows, narrow ? 110 : 200);
+  let cardW = 120;
+  if (narrow) {
+    // Deck strip at the bottom of the table area takes ~one card height.
+    for (let pass = 0; pass < 3; pass++) {
+      const strip = cardW * ratio * 0.95 + 10;
+      cardW = Math.min((fullRight - fullLeft) / spanCols, (areaH - strip) / spanRows, 120);
+    }
+  } else {
+    for (let pass = 0; pass < 3; pass++) {
+      const deckZone = cardW * 1.55 + 16;
+      cardW = Math.min((fullRight - fullLeft - deckZone) / spanCols, areaH / spanRows, short ? 130 : 200);
+    }
   }
-  cardW = Math.max(44, Math.floor(cardW));
+  cardW = Math.max(38, Math.floor(cardW));
   const cardH = Math.round(cardW * ratio);
-  const deckZone = cardW * 1.55 + 16;
 
-  const areaLeft = fullLeft + deckZone;
-  const areaW = fullRight - areaLeft;
-  const cx = areaLeft + areaW / 2;
-  const cy = areaTop + areaH / 2;
+  let cx, cy, deck;
+  if (narrow) {
+    const strip = cardH * 0.95 + 10;
+    cx = (fullLeft + fullRight) / 2;
+    cy = areaTop + (areaH - strip) / 2;
+    deck = { x: cx, y: areaBottom - cardH / 2 - 2 };
+  } else {
+    const deckZone = cardW * 1.55 + 16;
+    const areaLeft = fullLeft + deckZone;
+    cx = areaLeft + (fullRight - areaLeft) / 2;
+    cy = areaTop + areaH / 2;
+    deck = { x: fullLeft + deckZone / 2, y: cy };
+  }
   const midUx = (minX + maxX) / 2, midUy = (minY + maxY) / 2;
-
   const slots = units.map(u => ({
     x: cx + (u.x - midUx) * COL * cardW,
-    // nudge up slightly so the label under the lowest card has room
-    y: cy + (u.y - midUy) * ROW * cardH - cardH * 0.06,
+    y: cy + (u.y - midUy) * ROW * cardH - (compact ? 0 : cardH * 0.06),
   }));
 
-  const deck = { x: fullLeft + deckZone / 2, y: cy };
   return {
-    W, H, narrow, cardW, cardH, slots, deck, panelW, sheetH, topBar,
+    W, H, narrow, short, compact, cardW, cardH, slots, deck, panelW, sheetH, topBar,
     scatterBox: { left: fullLeft + cardW / 2, right: fullRight - cardW / 2, top: areaTop + cardH / 2, bottom: areaBottom - cardH / 2 },
   };
 }
