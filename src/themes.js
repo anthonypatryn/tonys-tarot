@@ -11,6 +11,14 @@ export const PRESETS = [
   { key: 'teal', name: 'Deep Sea', cloth: '#0d5a62', accent: '#9fe3d6', ink: '#ecfbf8' },
 ];
 
+// Printed altar-cloth patterns. Each has the original photo and a white-on-transparent mask that can be tinted any color.
+export const CLOTHS = {
+  pendulum: { name: 'Pendulum Board', img: '/cloths/pendulum.webp', mask: '/cloths/pendulum-mask.webp' },
+  serpent: { name: 'Serpent & Moons', img: '/cloths/serpent.webp', mask: '/cloths/serpent-mask.webp' },
+  zodiac: { name: 'Zodiac Wheel', img: '/cloths/zodiac.webp', mask: '/cloths/zodiac-mask.webp' },
+  metatron: { name: 'Metatron’s Cube', img: '/cloths/metatron.webp', mask: '/cloths/metatron-mask.webp' },
+};
+
 const hexToRgb = h => {
   const n = parseInt(h.replace('#', ''), 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];

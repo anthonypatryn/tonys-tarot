@@ -157,7 +157,7 @@ function MoonCircle({ x, y, r }) {
   );
 }
 
-export default function Decor({ L, active }) {
+export default function Decor({ L, active, embroidery = true }) {
   const { area, narrow, short } = L;
   const m = Math.min(L.W, L.H);
   if (narrow) {
@@ -179,7 +179,7 @@ export default function Decor({ L, active }) {
   return (
     <div className="decor">
       <Defs />
-      {!short && <MoonCircle x={area.cx} y={area.cy} r={ringR} />}
+      {!short && embroidery && <MoonCircle x={area.cx} y={area.cy} r={ringR} />}
       <Candle x={area.left + r * 1.6} y={area.top + r * 1.3} r={r} />
       <Candle x={area.left + r * 3.7} y={area.top + r * 0.7} r={r * 0.7} dark delay={0.6} />
       <Candle x={area.left + r * 3.2} y={area.top + r * 2.9} r={r * 0.55} delay={1.3} />

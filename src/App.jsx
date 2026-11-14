@@ -18,6 +18,9 @@ import Browse from './components/Browse.jsx';
 import History from './components/History.jsx';
 import Guide from './components/Guide.jsx';
 import Decor from './components/Decor.jsx';
+import HoloCard from './reactbits/HoloCard.jsx';
+import { ShineContext, loadShine, saveShine, holoProps } from './shine.js';
+import { CLOTHS } from './themes.js';
 
 export const MAX_CLARIFIERS = 6;
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -75,6 +78,8 @@ export default function App() {
   const [theme, setTheme] = useState(loadTheme);
   const [themeOpen, setThemeOpen] = useState(false);
   const changeTheme = t => { setTheme(t); applyTheme(t); saveTheme(t); };
+  const [shine, setShine] = useState(loadShine);
+  const changeShine = s => { setShine(s); saveShine(s); };
   const timers = useRef([]);
   const chooseDeck = k => { setDeckKey(k); saveDeckChoice(k); setView('table'); };
   const ratio = DECK_BY_KEY[deckKey].ratio;
@@ -271,14 +276,29 @@ export default function App() {
   const nextFlip = phase === 'reveal' || phase === 'done' ? (waitingClar >= 0 ? waitingClar : drawn.findIndex(c => !c.flipped)) : -1;
   const showSlots = !!spread && !shuffling;
 
+  // Center a fitted cloth pattern on the open part of the table (not under the guide panel).
+  const clothInset = Math.min(W, H) * 0.022;
+  const patternBox = theme.patternFit === 'cover' ? {} : {
+    left: L.area.left - clothInset, top: L.area.top - clothInset,
+    width: L.area.right - L.area.left, height: L.area.bottom - L.area.top,
+  };
+
   return (
     <DeckContext.Provider value={deckKey}>
+    <ShineContext.Provider value={shine}>
     <div className="app">
       <div className="table-wood" />
-      <div className="cloth">
+      <div className={`cloth ${theme.pattern && theme.pattern !== 'none' && theme.patternMode === 'original' ? 'original' : ''} ${theme.patternFit === 'cover' ? 'fill' : ''}`}>
+        {theme.pattern && theme.pattern !== 'none' && CLOTHS[theme.pattern] && (
+          theme.patternMode === 'original'
+            ? <div className="cloth-pattern" style={{ ...patternBox, backgroundImage: `url(${CLOTHS[theme.pattern].img})`, opacity: theme.patternOpacity ?? 0.9 }} />
+            : <div className="cloth-pattern tint" style={{ ...patternBox,
+                WebkitMaskImage: `url(${CLOTHS[theme.pattern].mask})`, maskImage: `url(${CLOTHS[theme.pattern].mask})`,
+                background: theme.patternColor || theme.accent, opacity: theme.patternOpacity ?? 0.9 }} />
+        )}
         <div className="cloth-trim" />
       </div>
-      <Decor L={L} active={shuffling || !!lifting} />
+      <Decor L={L} active={shuffling || !!lifting} embroidery={!theme.pattern || theme.pattern === 'none'} />
 
       <header className="topbar">
         <button className="brand" onClick={() => setView('table')}>
@@ -341,8 +361,11 @@ export default function App() {
             >
               <div className="card-inner" style={{ transform: flipped ? (axis === 'x' ? 'rotateX(180deg)' : 'rotateY(180deg)') : 'none' }}>
                 <div className="face back" style={{ backgroundImage: `url(${BACK_IMG})` }} />
-                <div className="face front" style={{ transform: axis === 'x' ? 'rotateX(180deg)' : 'rotateY(180deg)' }}>
-                  {d && <img src={cardImg(deckKey, d.id)} alt={CARD_BY_ID[d.id].name} draggable="false" />}
+                <div className={`face front ${flipped && shine.holo ? 'holo' : ''}`} style={{ transform: axis === 'x' ? 'rotateX(180deg)' : 'rotateY(180deg)' }}>
+                  {d && (flipped && shine.holo
+                    ? <HoloCard className="hc-fill" image={cardImg(deckKey, d.id)} alt={CARD_BY_ID[d.id].name}
+                        {...holoProps(shine, L.cardW)} rotation={p.rot} />
+                    : <img src={cardImg(deckKey, d.id)} alt={CARD_BY_ID[d.id].name} draggable="false" />)}
                 </div>
               </div>
             </div>
@@ -390,10 +413,11 @@ export default function App() {
       {view === 'browse' && <Browse onClose={() => setView('table')} onOpen={c => setFocus({ id: c.id, browse: true })} />}
       {view === 'history' && <History onClose={() => setView('table')} onOpen={setFocus} />}
       {view === 'guide' && <Guide onClose={() => setView('table')} />}
-      {themeOpen && <ThemePicker theme={theme} onChange={changeTheme} onClose={() => setThemeOpen(false)} />}
+      {themeOpen && <ThemePicker theme={theme} onChange={changeTheme} shine={shine} onShine={changeShine} onClose={() => setThemeOpen(false)} />}
       {view === 'decks' && <DeckPicker current={deckKey} onPick={chooseDeck} onClose={() => setView('table')} />}
       {focus && <CardReader {...focus} onClose={() => setFocus(null)} />}
     </div>
+    </ShineContext.Provider>
     </DeckContext.Provider>
   );
 }
