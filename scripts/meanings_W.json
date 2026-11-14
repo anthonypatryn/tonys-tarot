@@ -1,0 +1,72 @@
+{
+  "W-0A": {
+    "title": "The Ace of Wands",
+    "upright": "Creative drive. New projects and ideas. Exciting and creative new beginnings. Inspiration. Passion. Opportunities for growth.",
+    "reversed": "Lack of willpower or vision. Setbacks and delays to begin new projects or achieve goals. Creative blocks. In relationships, suggests cooled passions, lack of commitment, or difficulty conceiving."
+  },
+  "W-02": {
+    "title": "The Two of Wands",
+    "upright": "Ambition. Success. Choices. Exploring options.",
+    "reversed": "Bad timing. Initial success without follow-through. Misplaced trust in a partner, mentor, gatekeeper, or guide. Feelings of having failed to surpass the achievements of a parent figure."
+  },
+  "W-03": {
+    "title": "The Three of Wands",
+    "upright": "Project launch. Productivity. Reflection and progress with endeavors. Broadening your horizons. Expansion. Thinking outside the box.",
+    "reversed": "Delays amid success. Mild disappointments. Communication problems. Setbacks and delays due to competition in the field, carelessness, or lack of balance between action and planning."
+  },
+  "W-04": {
+    "title": "The Four of Wands",
+    "upright": "Celebration. Security. Peace. Happiness. Unity. Can refer to engagements, marriage, and important milestones. Harmony. Balance.",
+    "reversed": "Carries the same meaning as upright card. Can indicate something or someone putting a damper on the party."
+  },
+  "W-05": {
+    "title": "The Five of Wands",
+    "upright": "Competition. Conflict. Chaos. Jealousy. Chaotic energy. Tension. Differences of opinion.",
+    "reversed": "Ignoring or suppressing conflict. Can carry the opposite meaning, suggesting resolution and reconciliation."
+  },
+  "W-06": {
+    "title": "The Six of Wands",
+    "upright": "Victory. Validation. Messengers and messages. Triumph. Success. Confidence. Achieving goals. Receiving recognition for accomplishments.",
+    "reversed": "Reward or promotion has been postponed but will still arrive. Can indicate being let down by someone."
+  },
+  "W-07": {
+    "title": "The Seven of Wands",
+    "upright": "Courage. Self-defense. Forcefulness. Stubbornness. Struggle and perseverance. Vigorous energy and defense against challenges.",
+    "reversed": "Conflict avoidance. Reluctance. Insecurity. Indecisiveness. Feelings keeping you from defending yourself."
+  },
+  "W-08": {
+    "title": "The Eight of Wands",
+    "upright": "Action. Movement. Acceleration. Communication. Sudden and swift change. Good results after quick developments.",
+    "reversed": "Procrastination. Suggests that you are running yourself into the ground with nonstop, senseless activity. Refusal to prioritize. Burnout."
+  },
+  "W-09": {
+    "title": "The Nine of Wands",
+    "upright": "Guarding. Protecting. Defending. One’s faith is being tested. Struggle is almost over. Perseverance. Endurance. Resilience in times of difficulty.",
+    "reversed": "Feeling discouraged and exhausted from fighting. Giving in. Unreasonable or demanding person or people in your life have not backed down."
+  },
+  "W-10": {
+    "title": "The Ten of Wands",
+    "upright": "Burdened. Overwhelmed. Strengths. Carrying too much responsibility alone. Feeling burned out. Nearing the end of a challenging cycle.",
+    "reversed": "Sustained stress. Unwillingness to put your burden down. Inability to prioritize. You may be working to keep everyone happy without knowing what you personally want or need."
+  },
+  "W-J1": {
+    "title": "The Page of Wands",
+    "upright": "Inspired. Enthusiastic. Good news. Need to express creativity. New ideas and possibilities. Running free, no restrictions.",
+    "reversed": "Blocked energy. Overindulgence in excitement. Can indicate that you or someone influencing you is refusing to focus on work that needs to be done or relationships that need to be tended to."
+  },
+  "W-J2": {
+    "title": "The Knight of Wands",
+    "upright": "Impassioned. Enthusiastic. Inspired. Represents adventure and taking action. Inspiration and movement. Focus on achieving a goal.",
+    "reversed": "Competitive. Egotistical. Insecure. Too much fire fueling your personality or that of someone in your life. Can indicate Knight’s upright qualities are blocked due to insecurity."
+  },
+  "W-QU": {
+    "title": "The Queen of Wands",
+    "upright": "Visionary. Entrepreneur. Confident. Passionate. Energetic. Determined. Bold. Encourages expression and inspired action. Stands in self-empowerment.",
+    "reversed": "Strong-willed. Controlling. Might signal conflict with your mother or a strong-willed person in your life. Reconnect with the control you have to create your own projects."
+  },
+  "W-KI": {
+    "title": "The King of Wands",
+    "upright": "Wise. Charismatic. Successful. Strong. Powerful energy. Confidence. Leader with maturity, vision, and achievement. Potential for long-term success and manifestation.",
+    "reversed": "Opinionated. Impetuous. Competitive. Controlling. Micromanaging. Tyrannical."
+  }
+}

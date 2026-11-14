@@ -1,0 +1,182 @@
+{
+  "S-0A": {
+    "title": "The Ace of Swords",
+    "upright": "Intellect. Success. Decisions. Depicts new ideas and mental clarity. Purpose, action, and clear thoughts. There may be emerging ideas, revelations, or opportunities.",
+    "reversed": "Conflict. Abuse of power. Positive assertiveness of upright Ace of Swords turns into conflict and destructive uses of power."
+  },
+  "S-02": {
+    "title": "The Two of Swords",
+    "upright": "Indecision. Irresolution. Intuition. Represents choice or the inability to decide.",
+    "reversed": "Poor judgment. Choosing sides. Can indicate making up your mind after a period of indecision. In partnerships, can suggest manipulation, deception, and fundamental incompatibility."
+  },
+  "S-03": {
+    "title": "The Three of Swords",
+    "upright": "Sadness. Heartbreak. Catharsis. Symbolizes grief, sorrow, and mourning. The need to release emotion.",
+    "reversed": "Mitigated pain, possibly caused by the extremes of the Sword traits: overthinking, abstrating, or compartmentalizing."
+  },
+  "S-04": {
+    "title": "The Four of Swords",
+    "upright": "Recovering. Illustrates pausing, resting, or taking a step back. Calls for reflection or contemplation.",
+    "reversed": "Long recovery. You may need to take time off work and come to terms with spending more time resting."
+  },
+  "S-05": {
+    "title": "The Five of Swords",
+    "upright": "Failure. Sadness. Disappointment. Signifies conflict or feelings of defeat.",
+    "reversed": "Emphasizes unfairness of the fight at hand. Can indicate being on either side of a case of bullying or oppression."
+  },
+  "S-06": {
+    "title": "The Six of Swords",
+    "upright": "Travel. Perspective. Moving on. Symbolizes leaving the past behind and moving forward. Transitions and releasing of baggage.",
+    "reversed": "Stuck in a rut. Can indicate difficulty getting away or escaping from a difficult situation."
+  },
+  "S-07": {
+    "title": "The Seven of Swords",
+    "upright": "Sneaking. Calculating. Stealing. Represents deception, betrayal, and feeling cheated. Strategy. Creating boundaries and prioritizing oneself.",
+    "reversed": "Indicates that you are doing something unethical or signifies that you are dealing with dishonest, untrustworthy people."
+  },
+  "S-08": {
+    "title": "The Eight of Swords",
+    "upright": "Paralysis. Constraint. Ostracism. Indicates feeling helpless, stuck, or trapped by one’s own perspective or circumstances.",
+    "reversed": "Paralyzing indecision. Release. You find yourself extremely incapacitated, or your mental indecision or isolation echoes through your emotions as shame, guilt, or regret."
+  },
+  "S-09": {
+    "title": "The Nine of Swords",
+    "upright": "Panic. Insomnia. Portrays anxiety, sleepless nights, and excessive worry. This card reminds one to gain perspective and know their fears may be out of proportion.",
+    "reversed": "Pulling through. Assures you that you have already experienced the lowest point of mental anguish. The worst of this period is behind you."
+  },
+  "S-10": {
+    "title": "The Ten of Swords",
+    "upright": "Betrayal. Backstabbing. Release. Symbolizes rock bottom and difficult endings. A cycle of hard times is coming to an end, or one needs to find acceptance and self-help.",
+    "reversed": "Culpability. More crises to come. Indicates that you might be at least partly culpable for the terrible way things have gone."
+  },
+  "S-J1": {
+    "title": "The Page of Swords",
+    "upright": "Clever. Competitive. Minor power play. Represents new methods of communication, exploration, or new ideas. Curious. A cautious, tense, or careful approach.",
+    "reversed": "Gossip. Manipulation. You may be more worried about your reputation than on developing your own intellect, or spreading gossip about someone to tarnish or manipulate them."
+  },
+  "S-J2": {
+    "title": "The Knight of Swords",
+    "upright": "Intelligent. Confrontation. Advocate. Portrays swift action and ambition. The Knight moves with motivation and assertiveness. Quick thinking and intellect.",
+    "reversed": "Suggests you or someone in your life is causing conflict and imbalance by shoving an idea down others’ throats. Can signal excessive enthusiasm and getting carried away with ideas."
+  },
+  "S-QU": {
+    "title": "The Queen of Swords",
+    "upright": "Discerning. Independent. Intelligent. Boundaries. Truth. Directness. The Queen is strong and has keen insight.",
+    "reversed": "Spiteful. Wounded. Reversed Queen nurses resentment, holds grudges, and keeps score. Elitist. Pessimistic. Hurts others in ways they’ve been hurt. Closed-minded. Cruel."
+  },
+  "S-KI": {
+    "title": "The King of Swords",
+    "upright": "Professional. Rational. Ambitious. Authority. Command. Intelligence. Mental power. Truth. Expert advice and logical thinking.",
+    "reversed": "Without mercy. Abuse of power. Overly competitive. Ambition and authority turn ruthless."
+  },
+  "T-00": {
+    "title": "The Fool",
+    "upright": "The beginning of a journey. Innocence. Taking a leap of faith. Optimism. New beginnings. Adventure. Risk-taking.",
+    "reversed": "Impulsive. Inhibited. If you have been going overboard in your adventures, it is time to rein it in before someone gets hurt. If you haven’t gone out or had fun in a while, do something fun."
+  },
+  "T-01": {
+    "title": "The Magician",
+    "upright": "Manifestation. Spiritual connection. Creativity. Ability. Represents having everything you need inside of you to accomplish your dreams.",
+    "reversed": "Abuse of power. Powerlessness. Watch out for someone who may be charming you in order to take advantage of you. Maintain integrity. Be creative if stuck."
+  },
+  "T-02": {
+    "title": "The High Priestess",
+    "upright": "Intuition. Self-knowing. Divine knowing. The subconscious. Inner truth. Duality. A reminder to go within.",
+    "reversed": "Secrecy. Deception. Ignored intuition. You may be keeping a secret to deceive someone, or someone is hiding something from you. You may be ignoring or denying your spirituality."
+  },
+  "T-03": {
+    "title": "The Empress",
+    "upright": "Nurturing. Abundance. Elements of femininity, caring, Mother Earth, fertility. Motherhood. Creativity. Beauty.",
+    "reversed": "Difficulties with motherhood or relationship with mother or mother figure. Creative blocks that result from denying relationship with beauty, pleasure, art, and inner child."
+  },
+  "T-04": {
+    "title": "The Emperor",
+    "upright": "Solid foundations. Authority. Strength. Power. Leadership. Influence. Structured order. Reliability. Fatherhood. Responsibility.",
+    "reversed": "Unreliability. Coup. Revolution. Time to become more assertive, decisive, and attentive to schedules, materials, and productivity."
+  },
+  "T-05": {
+    "title": "The Hierophant",
+    "upright": "Tradition. Conformity. Education. Knowledge. Encompasses organized groups and religions. Concept of being confined by structures.",
+    "reversed": "Poor leadership. Being misled by an egotistical authority figure. A free-spirited visionary permitting you to forge your own path."
+  },
+  "T-06": {
+    "title": "The Lovers",
+    "upright": "Balance. Unity. Love. Fulfillment. Choice. Can refer to relationships or self-love, choices, and inner alignment.",
+    "reversed": "Temptation. Indecision. Betrayal. Uncertainty. Confusion. Disrespect. A time to take a deep breath and grow beyond past circumstances or temptations."
+  },
+  "T-07": {
+    "title": "The Chariot",
+    "upright": "Motion. Moving forward. Momentum. Breakthrough. Aspects of staying the course, taking action, or an outcome leading to victory. Travel.",
+    "reversed": "Loss of control. Disappointment. Indulgence. Egotism. Ask for help to get yourself on a healthy and creative path."
+  },
+  "T-08": {
+    "title": "Strength",
+    "upright": "Strength. Courage. Compassion. Perseverance. Power. Speaks to taming the chaos around you and staying strong. Graceful calm. Determination.",
+    "reversed": "Forceful. Passive. Signals that you are being too forceful or too passive in response to conflict."
+  },
+  "T-09": {
+    "title": "The Hermit",
+    "upright": "Signifies the need to go within or be alone. Need to connect to oneself on a deeper or more spiritual level. Self-reflection. Wisdom. Inner voice.",
+    "reversed": "Closed off. You might be too adamant about setting your schedule or giving the appearance of pursuing spiritual practice. You may be judging wisdom being shared with you."
+  },
+  "T-10": {
+    "title": "The Wheel of Fortune",
+    "upright": "Good luck. Karmic turns. A turning point is approaching or a cycle is shifting direction. Change. Patterns.",
+    "reversed": "A standstill. Closure. Resisting fate. Anything you try to avoid will inevitably come back to haunt you."
+  },
+  "T-11": {
+    "title": "Justice",
+    "upright": "Truth. Fairness. Wrongs are made right and justice is upheld. Accountability. Repercussions for actions. Balance. Objectivity. Equity.",
+    "reversed": "Undue feelings of injustice. Outcome of this situation is best and most fair for all involved. At an extreme, this lack of perspective manifests as prejudice, bias, or injustice."
+  },
+  "T-12": {
+    "title": "The Hanged Man",
+    "upright": "Perspective. Waiting. Pause or period of limbo, or the need to observe situations from a different angle. Trust. Self-sacrifice.",
+    "reversed": "Despair. Loss of faith. Undue self-sacrifice. Hang-ups and injustices that plague your spirit, convincing you to lose trust in yourself or in the divine. Sacrificing yourself out of habit."
+  },
+  "T-13": {
+    "title": "Death",
+    "upright": "Endings. Grief. Transformation. Change. Transitions are occurring and something is ending to make way for something new. Rebirth.",
+    "reversed": "Fear. Confusion. Resisting transformation. Refusal to accept an ending."
+  },
+  "T-14": {
+    "title": "Temperance",
+    "upright": "Balance and patience. Creativity. Art. Healing. Moderation is needed. Stay calm and keep to the middle ground.",
+    "reversed": "Imbalance. Indulgence. Deprivation. Take steps to restore balance."
+  },
+  "T-15": {
+    "title": "The Devil",
+    "upright": "Vitality. Play. Temptation. Oppression. Represents attachment and our shadow selves. We see that we can break free of addictions or temptations and that we are not powerless.",
+    "reversed": "Release. Severance. Freeing yourself. Finding that you are not as trapped as you first thought you were."
+  },
+  "T-16": {
+    "title": "The Tower",
+    "upright": "Destruction. Consequences. Catastrophe. Detoxification. Shows sudden change, crumbling of structures or foundations to make way for rebuilding the new.",
+    "reversed": "Caught in the cross fire. You are affected by someone else’s experience of destruction and collapse in their own life. Others’ mistakes do not have to limit your spirit."
+  },
+  "T-17": {
+    "title": "The Star",
+    "upright": "Guiding vision. Healing, Creativity. Promise and hope. Dreams can come true. A message of faith or a period of peaceful calm and blessings.",
+    "reversed": "Naivete. Obliviousness. Cynicism. Sense of hope, idealism, and possibility are latent. You or others are ignoring solutions and remedies that are possible if you allow yourself to hope and believe."
+  },
+  "T-18": {
+    "title": "The Moon",
+    "upright": "Dreams. Instinct. Crisis. Mystery and illusion. What is hidden is surfacing, and not everything is as it appears. Asks you to trust your intuition.",
+    "reversed": "Trauma. Emotional buildup. Caught in old patterns. Rather than exploring your subconscious, you ignore it. Tamping down your intuition, getting yourself into trouble."
+  },
+  "T-19": {
+    "title": "The Sun",
+    "upright": "Joy. Positivity. Health. Children. Happiness and successful outcomes. Better times approaching.",
+    "reversed": "Reversed meaning can be the same as upright definition. Can suggest loss of or difficulties concerning something cherished."
+  },
+  "T-20": {
+    "title": "Judgment",
+    "upright": "Criticism. Absolution. Rebirth and life purpose. Asks one to follow their true calling, release self-judgment, and become new as the end goal approaches.",
+    "reversed": "Overly critical. Kills any possibility of spiritual awakening."
+  },
+  "T-21": {
+    "title": "The World",
+    "upright": "Completion. Fulfillment. Wholeness. Celebration. Success is at hand, and a cycle has been accomplished. Triumph and achievement.",
+    "reversed": "The need to work within limitations. Find freedom within your circumstances."
+  }
+}

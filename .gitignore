@@ -1,0 +1,6 @@
+node_modules/
+dist/
+source_png/
+.claude/
+.vercel/
+*.log
