@@ -12,7 +12,8 @@ export function slotUnits(spread, clarifiers = 0) {
   if (clarifiers > 0) {
     const maxX = Math.max(...units.map(u => u.x));
     const minY = Math.min(...units.map(u => u.y));
-    for (let i = 0; i < clarifiers; i++) units.push({ x: maxX + 1.25, y: minY + i * 1 });
+    // Clarifiers stack in columns of three to the right of the spread.
+    for (let i = 0; i < clarifiers; i++) units.push({ x: maxX + 1.25 + Math.floor(i / 3) * 1.05, y: minY + (i % 3) });
   }
   return units;
 }
@@ -85,6 +86,7 @@ export function computeLayout(W, H, spread, clarifiers = 0, ratio = CARD_RATIO, 
 
   return {
     W, H, narrow, short, compact, cardW, cardH, slots, deck, panelW, sheetH, topBar,
+    area: { left: fullLeft, right: fullRight, top: areaTop, bottom: areaBottom, cx, cy },
     scatterBox: { left: fullLeft + cardW / 2, right: fullRight - cardW / 2, top: areaTop + cardH / 2, bottom: areaBottom - cardH / 2 },
   };
 }

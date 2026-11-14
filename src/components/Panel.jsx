@@ -47,7 +47,7 @@ export default function Panel(p) {
   const { phase, spread, L } = p;
   const deckKey = useDeck();
   const stepIdx = STEPS.findIndex(s => s[0] === phase);
-  const label = i => spread?.positions[drawnSlot(i)]?.label || 'Clarifying card';
+  const label = i => spread?.positions[drawnSlot(i)]?.label || (p.drawn[i]?.clarifies ? `Clarifying: ${p.drawn[i].clarifies}` : 'Clarifying card');
   const drawnSlot = i => p.drawn[i]?.slot ?? i;
 
   let body;
@@ -140,13 +140,13 @@ export default function Panel(p) {
 
         {!allFlipped && p.nextFlip >= 0 && (
           <p className="lead big-instruction">
-            Turn over <b>{p.drawn[p.nextFlip].slot < spread.positions.length ? `position ${p.drawn[p.nextFlip].slot + 1}: ` : ''}{label(p.nextFlip)}</b>. {p.verb} the glowing card.
+            Turn over <b>{p.drawn[p.nextFlip].slot < spread.positions.length ? `position ${p.drawn[p.nextFlip].slot + 1}: ` : 'the '}{p.drawn[p.nextFlip].slot < spread.positions.length ? label(p.nextFlip) : `clarifying card for “${p.drawn[p.nextFlip].clarifies}”`}</b>. {p.verb} the glowing card.
           </p>
         )}
 
         {sel && sel.flipped && (
           <div className="reading-card">
-            <div className="pos-tag">{sel.slot < spread.positions.length ? `Position ${sel.slot + 1} · ${label(p.selected)}` : 'Clarifying card'}</div>
+            <div className="pos-tag">{sel.slot < spread.positions.length ? `Position ${sel.slot + 1} · ${label(p.selected)}` : `✦ Clarifying card · for ${sel.clarifies}`}</div>
             <h3>{CARD_BY_ID[sel.id].title}</h3>
             {deckName(deckKey, sel.id) && <div className="alt-name">In this deck: {deckName(deckKey, sel.id)}</div>}
             <Meaning card={sel.id} reversed={sel.reversed} big />
@@ -154,6 +154,7 @@ export default function Panel(p) {
             <button className="ghost small" onClick={() => p.onFocus({ id: sel.id, reversed: sel.reversed, label: label(p.selected) })}>
               ⤢ Read it large
             </button>
+            {p.canClarify && <p className="clar-hint">✦ Not clear yet? Use <b>+ Clarifying card</b> beside the deck to draw one more card for this position.</p>}
           </div>
         )}
 
@@ -191,7 +192,6 @@ export default function Panel(p) {
               <textarea id="notes" rows={4} value={p.notes} onChange={e => p.setNotes(e.target.value)} placeholder="What came to mind…" />
             </div>
             <div className="actions">
-              <button className="ghost" disabled={!p.canClarify} onClick={p.onClarify}>+ Clarifying card</button>
               <button className="primary" onClick={p.onNew}>New reading</button>
             </div>
           </>

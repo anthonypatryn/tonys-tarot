@@ -17,7 +17,9 @@ import CardReader from './components/CardReader.jsx';
 import Browse from './components/Browse.jsx';
 import History from './components/History.jsx';
 import Guide from './components/Guide.jsx';
+import Decor from './components/Decor.jsx';
 
+export const MAX_CLARIFIERS = 6;
 const rnd = (a, b) => a + Math.random() * (b - a);
 // Small stable per-card wobble so the deck looks hand-stacked.
 const wobble = id => {
@@ -132,7 +134,7 @@ export default function App() {
 
   const startDrawing = () => setPhase('draw');
 
-  const drawCard = useCallback(() => {
+  const drawCard = useCallback((extra = {}) => {
     if (!spread || deck.length === 0 || lifting) return;
     const totalSlots = spread.positions.length + clarifiers;
     if (drawn.length >= totalSlots) return;
@@ -140,7 +142,7 @@ export default function App() {
     const axis = Math.random() < 0.5 ? 'x' : 'y'; // which edge it gets turned over by
     setDeck(d => d.slice(0, -1));
     const jitter = rnd(-2.5, 2.5); // hand-placed, never perfectly square
-    setDrawn(d => [...d, { ...top, slot: d.length, flipped: false, axis, jitter }]);
+    setDrawn(d => [...d, { ...top, slot: d.length, flipped: false, axis, jitter, ...extra }]);
     setLifting(top.id);
     sound.draw();
     later(() => setLifting(null), 750);
@@ -153,12 +155,15 @@ export default function App() {
     }
   }, [phase, spread, drawn.length, lifting]);
 
+  // What a drawn card stands for: its spread position, or which card it clarifies.
+  const slotLabel = c => spread?.positions[c.slot]?.label || (c.clarifies ? `Clarifying: ${c.clarifies}` : 'Clarifying card');
+
   const flipCard = i => {
     const c = drawn[i];
     if (!c) return;
     if (c.flipped) {
       // Tap once to show it in the guide; tap the same card again to open the large reader.
-      if (selected === i) setFocus({ id: c.id, reversed: c.reversed, label: spread?.positions[c.slot]?.label || 'Clarifying card' });
+      if (selected === i) setFocus({ id: c.id, reversed: c.reversed, label: slotLabel(c) });
       else { setSelected(i); setSheetCollapsed(false); }
       return;
     }
@@ -194,23 +199,32 @@ export default function App() {
       notes,
       cards: drawn.filter(c => c.flipped).map(c => ({
         id: c.id, reversed: c.reversed,
-        label: spread.positions[c.slot]?.label || `Clarifying card ${c.slot - spread.positions.length + 1}`,
+        label: slotLabel(c),
       })),
     });
   }, [allRevealed, phase, drawn, notes, question, spread, readingId, deckKey]);
 
-  // Clarifying card: add a slot, then draw into it once the new slot exists.
-  const pendingClar = useRef(false);
+  // Clarifying card: can be drawn after any card is turned over. Add a slot, then draw into it once the slot exists.
+  const pendingClar = useRef(null);
   useEffect(() => {
     if (!spread) return;
     if (pendingClar.current && drawn.length < spread.positions.length + clarifiers) {
-      pendingClar.current = false;
-      drawCard();
+      const extra = pendingClar.current;
+      pendingClar.current = null;
+      drawCard(extra);
     }
   }, [clarifiers, drawCard, drawn.length, spread]);
+  const lastFlipped = (() => {
+    if (selected != null && drawn[selected]?.flipped) return drawn[selected];
+    for (let i = drawn.length - 1; i >= 0; i--) if (drawn[i].flipped) return drawn[i];
+    return null;
+  })();
+  const clarTarget = lastFlipped && (spread?.positions[lastFlipped.slot]?.label || lastFlipped.clarifies || 'Clarifying card');
+  const canClarify = !!spread && (phase === 'reveal' || phase === 'done') && !!lastFlipped && deck.length > 0
+    && clarifiers < MAX_CLARIFIERS && !lifting && !drawn.some(c => c.slot >= spread.positions.length && !c.flipped);
   const requestClarifier = () => {
-    if (!spread || deck.length === 0 || clarifiers >= 3 || lifting) return;
-    pendingClar.current = true;
+    if (!canClarify) return;
+    pendingClar.current = { clarifies: clarTarget };
     setClarifiers(n => n + 1);
   };
 
@@ -253,7 +267,8 @@ export default function App() {
 
   const totalSlots = spread ? spread.positions.length + (phase === 'choose' ? 0 : clarifiers) : 0;
   const nextDrawSlot = phase === 'draw' ? drawn.length : -1;
-  const nextFlip = phase === 'reveal' || phase === 'done' ? drawn.findIndex(c => !c.flipped) : -1;
+  const waitingClar = spread ? drawn.findIndex(c => c.slot >= spread.positions.length && !c.flipped) : -1;
+  const nextFlip = phase === 'reveal' || phase === 'done' ? (waitingClar >= 0 ? waitingClar : drawn.findIndex(c => !c.flipped)) : -1;
   const showSlots = !!spread && !shuffling;
 
   return (
@@ -263,8 +278,7 @@ export default function App() {
       <div className="cloth">
         <div className="cloth-trim" />
       </div>
-      <div className="candle c1"><span /></div>
-      <div className="candle c2"><span /></div>
+      <Decor L={L} active={shuffling || !!lifting} />
 
       <header className="topbar">
         <button className="brand" onClick={() => setView('table')}>
@@ -286,7 +300,7 @@ export default function App() {
       {/* Spread outlines */}
       {showSlots && L.slots.slice(0, totalSlots).map((s, i) => {
         const pos = spread.positions[i];
-        const label = pos ? pos.label : `Clarifying card${clarifiers > 1 ? ` ${i - spread.positions.length + 1}` : ''}`;
+        const label = pos ? pos.label : (drawn[i] ? slotLabel(drawn[i]) : 'Clarifying card');
         const filled = i < drawn.length;
         const cls = ['slot', phase === 'choose' ? 'preview' : '', i === nextDrawSlot ? 'next' : '', filled ? 'filled' : '',
           filled && drawn[i] && i === nextFlip ? 'flip-next' : ''].join(' ');
@@ -323,7 +337,7 @@ export default function App() {
                 transitionDelay: p.delay ? `${p.delay}ms` : '0ms',
               }}
               onClick={d ? () => flipCard(d.index) : undefined}
-              onDoubleClick={d && flipped ? () => setFocus({ id: d.id, reversed: d.reversed, label: spread?.positions[d.slot]?.label || 'Clarifying card' }) : undefined}
+              onDoubleClick={d && flipped ? () => setFocus({ id: d.id, reversed: d.reversed, label: slotLabel(d) }) : undefined}
             >
               <div className="card-inner" style={{ transform: flipped ? (axis === 'x' ? 'rotateX(180deg)' : 'rotateY(180deg)') : 'none' }}>
                 <div className="face back" style={{ backgroundImage: `url(${BACK_IMG})` }} />
@@ -343,6 +357,7 @@ export default function App() {
           onClick={() => {
             if (phase === 'draw') drawCard();
             else if (phase === 'question' || (phase === 'shuffle' && !shuffling)) doShuffle();
+            else if (canClarify) requestClarifier();
           }}
           aria-label="Deck">
           {phase === 'draw' && !lifting && <span className="deck-tip">{verb} to draw</span>}
@@ -351,13 +366,23 @@ export default function App() {
         </button>
       )}
 
+      {/* Clarifying card: right next to the deck, available after each card is turned over */}
+      {view === 'table' && canClarify && (
+        <button className={`clar-btn ${L.narrow ? 'side' : ''}`} onClick={requestClarifier}
+          style={L.narrow
+            ? { left: L.deck.x + L.cardW / 2 + 12, top: L.deck.y, maxWidth: Math.max(110, L.W - (L.deck.x + L.cardW / 2 + 12) - 10) }
+            : { left: Math.max(L.area.left + 4, L.deck.x - 95), top: L.deck.y + L.cardH / 2 + 14 }}>
+          <b>+ Clarifying card</b>
+          <small>for “{clarTarget}” · {MAX_CLARIFIERS - clarifiers} left</small>
+        </button>
+      )}
+
       <Panel
         L={L} phase={phase} spread={spread} spreads={SPREADS} question={question} setQuestion={setQuestion}
         onPreview={setPreviewId} onPick={pickSpread} onBack={() => { setSpreadId(null); setPhase('choose'); }}
         onShuffle={doShuffle} shuffling={shuffling} shuffles={shuffles} onStartDrawing={startDrawing}
         drawn={drawn} selected={selected} setSelected={setSelected} nextFlip={nextFlip}
-        onFocus={setFocus} notes={notes} setNotes={setNotes} onClarify={requestClarifier}
-        canClarify={deck.length > 0 && clarifiers < 3 && !lifting && drawn.every(c => c.flipped)}
+        onFocus={setFocus} notes={notes} setNotes={setNotes} canClarify={canClarify}
         onNew={resetAll} onSummary={showSummary} verb={verb}
         collapsed={sheetCollapsed} onToggleSheet={() => setSheetCollapsed(c => !c)}
       />
