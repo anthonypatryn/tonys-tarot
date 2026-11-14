@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { CARD_BY_ID } from '../deck.js';
 import { SPREAD_BY_ID } from '../spreads.js';
 import { loadHistory, deleteReading } from '../history.js';
+import { cardImg, DECK_BY_KEY } from '../decks.js';
 
 export default function History({ onClose, onOpen }) {
   const [items, setItems] = useState(loadHistory);
@@ -28,14 +29,14 @@ export default function History({ onClose, onOpen }) {
                 {r.question && <em>“{r.question}”</em>}
                 <span className="h-thumbs">
                   {r.cards.map(c => (
-                    <img key={c.id} src={CARD_BY_ID[c.id].img} alt="" style={{ transform: c.reversed ? 'rotate(180deg)' : 'none' }} />
+                    <img key={c.id} src={cardImg(r.deck || 'beginners', c.id)} alt="" style={{ transform: c.reversed ? 'rotate(180deg)' : 'none' }} />
                   ))}
                 </span>
               </button>
               {isOpen && (
                 <div className="h-body">
                   {r.cards.map(c => (
-                    <button key={c.id} className="sum-row" onClick={() => onOpen({ id: c.id, reversed: c.reversed, label: c.label })}>
+                    <button key={c.id} className="sum-row" onClick={() => onOpen({ id: c.id, reversed: c.reversed, label: c.label, deck: DECK_BY_KEY[r.deck] ? r.deck : 'beginners' })}>
                       <span className="sum-pos">✦</span>
                       <span>
                         <small>{c.label}</small>

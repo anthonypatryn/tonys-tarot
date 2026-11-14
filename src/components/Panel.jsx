@@ -1,5 +1,6 @@
 import { CARD_BY_ID } from '../deck.js';
 import { SUIT_MEANINGS, RANK_MEANINGS } from '../spreads.js';
+import { useDeck, deckName } from '../decks.js';
 
 const STEPS = [
   ['choose', 'Choose'], ['question', 'Ask'], ['shuffle', 'Shuffle'], ['draw', 'Draw'], ['reveal', 'Reveal'], ['done', 'Reflect'],
@@ -44,6 +45,7 @@ function Keywords({ id }) {
 
 export default function Panel(p) {
   const { phase, spread, L } = p;
+  const deckKey = useDeck();
   const stepIdx = STEPS.findIndex(s => s[0] === phase);
   const label = i => spread?.positions[drawnSlot(i)]?.label || 'Clarifying card';
   const drawnSlot = i => p.drawn[i]?.slot ?? i;
@@ -146,6 +148,7 @@ export default function Panel(p) {
           <div className="reading-card">
             <div className="pos-tag">{sel.slot < spread.positions.length ? `Position ${sel.slot + 1} · ${label(p.selected)}` : 'Clarifying card'}</div>
             <h3>{CARD_BY_ID[sel.id].title}</h3>
+            {deckName(deckKey, sel.id) && <div className="alt-name">In this deck: {deckName(deckKey, sel.id)}</div>}
             <Meaning card={sel.id} reversed={sel.reversed} big />
             <Keywords id={sel.id} />
             <button className="ghost small" onClick={() => p.onFocus({ id: sel.id, reversed: sel.reversed, label: label(p.selected) })}>

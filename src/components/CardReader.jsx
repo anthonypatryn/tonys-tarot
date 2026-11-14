@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { CARD_BY_ID } from '../deck.js';
 import { SUIT_MEANINGS, RANK_MEANINGS } from '../spreads.js';
+import { useDeck, cardImg, deckName } from '../decks.js';
 
 // Full-screen, large-print view of one card and its meaning(s).
-export default function CardReader({ id, reversed = false, label, browse, onClose }) {
+export default function CardReader({ id, reversed = false, label, browse, deck, onClose }) {
+  const current = useDeck();
+  const deckKey = deck || current;
   const c = CARD_BY_ID[id];
+  const alt = deckName(deckKey, id);
   const [upsideDown, setUpsideDown] = useState(!!reversed);
   if (!c) return null;
   return (
@@ -12,12 +16,13 @@ export default function CardReader({ id, reversed = false, label, browse, onClos
       <div className="reader-box" onClick={e => e.stopPropagation()}>
         <button className="close" onClick={onClose} aria-label="Close">✕</button>
         <div className="reader-img">
-          <img src={c.img} alt={c.name} style={{ transform: upsideDown ? 'rotate(180deg)' : 'none' }} />
+          <img src={cardImg(deckKey, id)} alt={c.name} style={{ transform: upsideDown ? 'rotate(180deg)' : 'none' }} />
           <button className="ghost small" onClick={() => setUpsideDown(u => !u)}>↻ Turn card around</button>
         </div>
         <div className="reader-text">
           {label && <div className="pos-tag">{label}</div>}
           <h2>{c.title}</h2>
+          {alt && <div className="alt-name">In this deck: {alt}</div>}
           <p className="keywords">
             <b>{c.suit}</b>: {SUIT_MEANINGS[c.suit]}{c.rank && <> · <b>{c.rank}</b>: {RANK_MEANINGS[c.rank]}</>}
           </p>

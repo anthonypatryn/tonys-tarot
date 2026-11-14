@@ -1,3 +1,8 @@
+/* Fonts from the FontSpace "For Tarot Cards" collection:
+   Grim Reaper (freeware, non-commercial) and Romantique Initials (public domain). */
+@font-face { font-family: 'Grim Reaper'; src: url('/fonts/grim-reaper.woff') format('woff'); font-display: swap; }
+@font-face { font-family: 'Romantique Initials'; src: url('/fonts/romantique-initials.woff') format('woff'); font-display: swap; }
+
 :root {
   --gold: #e8c47a;
   --gold-soft: rgba(232, 196, 122, 0.55);
@@ -9,7 +14,9 @@
   --rev: #f08a7a;
   --up: #9fd8a8;
   --serif: 'Lora', Georgia, 'Times New Roman', serif;
-  --display: 'Cinzel', 'Trajan Pro', Georgia, serif;
+  --display: 'Cinzel', 'Trajan Pro', Georgia, serif; /* small labels */
+  --title: 'Grim Reaper', 'Cinzel', Georgia, serif;  /* headings */
+  --initial: 'Romantique Initials', 'Grim Reaper', serif;
 }
 
 * { box-sizing: border-box; }
@@ -270,3 +277,31 @@ button:disabled { opacity: .4; cursor: not-allowed; }
 }
 @media (max-width: 520px) { .brand { display: none; } .topbar { justify-content: center; } }
 @media (prefers-reduced-motion: reduce) { .card, .card-inner { transition-duration: .2s; } .brand-star, .candle span { animation: none; } }
+
+/* ---------- Tarot fonts (kept last so they win) ---------- */
+.brand, .panel h2, .panel h3, .page-head h2, .reader-text h2, .spread-tile b, .howto h3, .reflect h4, .h-head b {
+  font-family: var(--title); letter-spacing: .02em; font-weight: 400;
+}
+/* Illuminated drop cap on the big meaning text */
+.meaning.big .meaning-text::first-letter, .meaning-text.xl::first-letter {
+  font-family: var(--initial); float: left; font-size: 3.3em; line-height: .82; margin: .06em .14em 0 0; color: var(--gold);
+}
+
+/* ---------- Deck picker ---------- */
+.alt-name { font-size: 16px; color: var(--gold); font-style: italic; margin: -2px 0 6px; }
+.deck-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; max-width: 1200px; margin: 18px auto 0; }
+.deck-option { position: relative; text-align: left; background: rgba(255,255,255,.04); border: 1px solid rgba(232,196,122,.25);
+  border-radius: 14px; padding: 16px; cursor: pointer; display: flex; flex-direction: column; gap: 6px; transition: border-color .2s, transform .2s; }
+.deck-option:hover { border-color: var(--gold); transform: translateY(-3px); }
+.deck-option.on { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold), 0 0 26px rgba(232,196,122,.25); }
+.deck-option b { font-family: var(--title); font-weight: 400; font-size: 22px; color: var(--ink); }
+.deck-option small { color: var(--ink-dim); font-size: 14px; line-height: 1.4; }
+.deck-fan { display: flex; justify-content: center; height: 170px; align-items: flex-end; margin-bottom: 8px; }
+.deck-fan img { width: 82px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,.55); margin: 0 -14px; transform-origin: 50% 120%; transition: transform .3s; }
+.deck-fan img:nth-child(1) { transform: rotate(-14deg); }
+.deck-fan img:nth-child(2) { transform: rotate(-5deg); }
+.deck-fan img:nth-child(3) { transform: rotate(5deg); }
+.deck-fan img:nth-child(4) { transform: rotate(14deg); }
+.deck-option:hover .deck-fan img:nth-child(1) { transform: rotate(-20deg); }
+.deck-option:hover .deck-fan img:nth-child(4) { transform: rotate(20deg); }
+.deck-badge { position: absolute; top: 12px; right: 12px; background: var(--gold); color: #2a1408; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }

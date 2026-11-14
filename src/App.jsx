@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CARDS, CARD_BY_ID, BACK_IMG, shuffleDeck } from './deck.js';
+import { CARDS, CARD_BY_ID, shuffleDeck } from './deck.js';
+import { DECK_BY_KEY, DeckContext, cardImg, backImg, loadDeckChoice, saveDeckChoice } from './decks.js';
+import DeckPicker from './components/DeckPicker.jsx';
 import { SPREADS, SPREAD_BY_ID } from './spreads.js';
 import { computeLayout } from './layout.js';
 import { sound } from './sound.js';
@@ -47,11 +49,15 @@ export default function App() {
   const [readingId, setReadingId] = useState(null);
   const [notes, setNotes] = useState('');
   const [soundOn, setSoundOn] = useState(sound.enabled);
+  const [deckKey, setDeckKey] = useState(loadDeckChoice);
   const timers = useRef([]);
+  const chooseDeck = k => { setDeckKey(k); saveDeckChoice(k); setView('table'); };
+  const ratio = DECK_BY_KEY[deckKey].ratio;
+  const BACK_IMG = backImg(deckKey);
 
   const spread = SPREAD_BY_ID[spreadId] || SPREAD_BY_ID[previewId] || null;
   const layoutSpread = spread || SPREAD_BY_ID['ppf'];
-  const L = useMemo(() => computeLayout(W, H, layoutSpread, clarifiers), [W, H, layoutSpread, clarifiers]);
+  const L = useMemo(() => computeLayout(W, H, layoutSpread, clarifiers, ratio), [W, H, layoutSpread, clarifiers, ratio]);
 
   const later = (fn, ms) => timers.current.push(setTimeout(fn, ms));
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
@@ -147,6 +153,7 @@ export default function App() {
       id,
       date: new Date().toISOString(),
       spreadId: spread.id,
+      deck: deckKey,
       question,
       notes,
       cards: drawn.filter(c => c.flipped).map(c => ({
@@ -154,7 +161,7 @@ export default function App() {
         label: spread.positions[c.slot]?.label || `Clarifying card ${c.slot - spread.positions.length + 1}`,
       })),
     });
-  }, [phase, drawn, notes, question, spread, readingId]);
+  }, [phase, drawn, notes, question, spread, readingId, deckKey]);
 
   // Clarifying card: add a slot, then draw into it once the new slot exists.
   const pendingClar = useRef(false);
@@ -214,6 +221,7 @@ export default function App() {
   const showSlots = !!spread && !shuffling;
 
   return (
+    <DeckContext.Provider value={deckKey}>
     <div className="app">
       <div className="table-wood" />
       <div className="cloth">
@@ -228,7 +236,8 @@ export default function App() {
         </button>
         <nav>
           <button className={view === 'table' ? 'on' : ''} onClick={() => setView('table')}>Reading</button>
-          <button className={view === 'browse' ? 'on' : ''} onClick={() => setView('browse')}>Browse deck</button>
+          <button className={view === 'decks' ? 'on' : ''} onClick={() => setView('decks')}>Deck art</button>
+          <button className={view === 'browse' ? 'on' : ''} onClick={() => setView('browse')}>Browse</button>
           <button className={view === 'history' ? 'on' : ''} onClick={() => setView('history')}>History</button>
           <button className={view === 'guide' ? 'on' : ''} onClick={() => setView('guide')}>Guide</button>
           <button className="icon" onClick={toggleSound} title={soundOn ? 'Sound on' : 'Sound off'} aria-label="Toggle sound">
@@ -276,7 +285,7 @@ export default function App() {
               <div className="card-inner" style={{ transform: flipped ? (axis === 'x' ? 'rotateX(180deg)' : 'rotateY(180deg)') : 'none' }}>
                 <div className="face back" style={{ backgroundImage: `url(${BACK_IMG})` }} />
                 <div className="face front" style={{ transform: axis === 'x' ? 'rotateX(180deg)' : 'rotateY(180deg)' }}>
-                  {d && <img src={CARD_BY_ID[d.id].img} alt={CARD_BY_ID[d.id].name} draggable="false" />}
+                  {d && <img src={cardImg(deckKey, d.id)} alt={CARD_BY_ID[d.id].name} draggable="false" />}
                 </div>
               </div>
             </div>
@@ -312,7 +321,9 @@ export default function App() {
       {view === 'browse' && <Browse onClose={() => setView('table')} onOpen={c => setFocus({ id: c.id, browse: true })} />}
       {view === 'history' && <History onClose={() => setView('table')} onOpen={setFocus} />}
       {view === 'guide' && <Guide onClose={() => setView('table')} />}
+      {view === 'decks' && <DeckPicker current={deckKey} onPick={chooseDeck} onClose={() => setView('table')} />}
       {focus && <CardReader {...focus} onClose={() => setFocus(null)} />}
     </div>
+    </DeckContext.Provider>
   );
 }

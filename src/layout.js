@@ -13,7 +13,7 @@ export function slotUnits(spread, clarifiers = 0) {
   return units;
 }
 
-export function computeLayout(W, H, spread, clarifiers = 0) {
+export function computeLayout(W, H, spread, clarifiers = 0, ratio = CARD_RATIO) {
   const narrow = W < 860;
   const topBar = narrow ? 58 : 66;
   const margin = narrow ? 10 : 22;
@@ -24,7 +24,7 @@ export function computeLayout(W, H, spread, clarifiers = 0) {
   const minX = Math.min(...units.map(u => u.x)), maxX = Math.max(...units.map(u => u.x));
   const minY = Math.min(...units.map(u => u.y)), maxY = Math.max(...units.map(u => u.y));
   const spanCols = (maxX - minX) * COL + COL;
-  const spanRows = ((maxY - minY) * ROW + ROW) * CARD_RATIO;
+  const spanRows = ((maxY - minY) * ROW + ROW) * ratio;
 
   const areaTop = topBar + margin;
   const areaBottom = H - margin - sheetH;
@@ -40,7 +40,7 @@ export function computeLayout(W, H, spread, clarifiers = 0) {
     cardW = Math.min(areaW / spanCols, areaH / spanRows, narrow ? 110 : 200);
   }
   cardW = Math.max(44, Math.floor(cardW));
-  const cardH = Math.round(cardW * CARD_RATIO);
+  const cardH = Math.round(cardW * ratio);
   const deckZone = cardW * 1.55 + 16;
 
   const areaLeft = fullLeft + deckZone;

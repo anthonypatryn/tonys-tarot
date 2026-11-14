@@ -1,0 +1,22 @@
+{
+ "chromatika": {
+  "ratio": 1.8338,
+  "cards": 78
+ },
+ "classic": {
+  "ratio": 1.6846,
+  "cards": 78
+ },
+ "newvision": {
+  "ratio": 1.8173,
+  "cards": 78
+ },
+ "viceversa": {
+  "ratio": 1.8,
+  "cards": 78
+ },
+ "thoth": {
+  "ratio": 1.4908,
+  "cards": 78
+ }
+}
